@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chat</title>
+
+    <script defer src="http://localhost:2000/socket.io/socket.io.js"></script>
+    <script defer src="script.js"></script>
+
+    <style>
+
+        body {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: darkgray;
+        }
+
+        #message-container {
+            width: 60%;
+            max-width: 1200px;
+            border-style: solid;
+            border-width: 2px;
+        }
+
+        #message-container div {
+                background-color: #CCC;
+                padding: 5px;
+            }
+
+            #message-container div:nth-child(2n) {
+                background-color: #FFF;
+            }
+
+        #send-container {
+            position: fixed;
+            padding-bottom: 50px;
+            bottom: 0;
+            background-color: darkgray;
+            max-width: 1200px;
+            width: 80%;
+            display: flex;
+            
+        }
+
+        #message-input {
+            flex-grow: 1;
+            border-style: solid;
+            border-width: 1px;
+
+        }
+    </style>
+</head>
+<body>
+
+
+
+    <div id="message-container"></div>
+
+
+
+    <form id="send-container">
+        <input type="text" id="message-input">
+        <button type="submit" id="send-button">Wyślij</button>
+    </form>
+</body>
+</html>
