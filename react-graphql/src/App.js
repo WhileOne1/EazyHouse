@@ -4,21 +4,22 @@ import './App.css';
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 
-const booksQuery = gql` {
-  books {
-    title
+const devicesQuery = gql` {
+  devices {
+    name
+    isActive
   }
 }`
 
 export default class App extends Component {
     render() {
         return (
-            <Query query={booksQuery}>
+            <Query query={devicesQuery}>
                 {({ loading, error, data }) => {
                     if (loading) return <div>Laduje dane</div>
                     if (error) return <div>Wystapil blad</div>
 
-                    const books = data.books;
+                    const devices = data.devices;
 
                     return (
                         <div>
@@ -27,9 +28,9 @@ export default class App extends Component {
                                 <p>
                                     <span><b>Tytul: </b></span>
                                 </p>
-                                {books.map(book =>
+                                {devices.map(device =>
                                     <p >
-                                        <span dangerouslySetInnerHTML={{ __html: book.title }}></span>
+                                        <span dangerouslySetInnerHTML={{  __html:  'nazwa: ' + device.name + ' || czy podłączone: ' + device.isActive }}></span>
                                     </p>
                                 )}
                             </div>

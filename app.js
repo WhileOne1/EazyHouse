@@ -21,18 +21,40 @@ class Device {
         this.isActive = isActive
     }
 }
-
+const devicesId = {}
 
 io.on('connection', socket => {
+    socket.on('check-id', ( id ) => {
+        devicesId[socket.id] = id
+        if(typeof api.device[id] === 'undefined') {
+            socket.emit('new-id', id)
+        }
+        else
+        {
+            socket.emit('old-id', id)
+        }
+    })
     socket.on('new-device', ({ id, name }) => {
-        const device = new Device(id, name, true)
-        api.device[socket.id] = device
+        
+        
+            const device = new Device(id, name, true)
+            api.device[id] = device
+            console.log(`${api.device[id]}`);
+    })
+    socket.on('old-device', ( id ) => {
+        
+            console.log(`urządzenie o podanym id już istnieje`);
+            api.device[id].isActive = true
+
     })
     socket.on('disconnect', () => {
-        api.device[socket.id].isActive = false
+        api.device[devicesId[socket.id]].isActive = false
     })
 })
+console.log(`${api.device[0].name}`);
+
 server.listen().then(({ url }) => {
     console.log(`server listen at ${url}`);
+    
 });
 
