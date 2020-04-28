@@ -6,8 +6,7 @@ const typeDefs = require('./server/schema');
 
 const resolvers = {
     Query: {
-        books: () => api.books,
-        authors: () => api.authors
+        devices: () => api.device
     },
 };
 
@@ -15,19 +14,22 @@ const server = new ApolloServer({ typeDefs, resolvers });
 
 const io = require('socket.io')(2000)
 
-const users = {}
+class Device {
+    constructor(id, name, isActive) {
+        this.id = id
+        this.name = name
+        this.isActive = isActive
+    }
+}
+
 
 io.on('connection', socket => {
-    socket.on('new-user', name => {
-        users[socket.id] = name
-        socket.broadcast.emit('connected', name)
-    })
-    socket.on('send-chat-message', message => {
-        socket.broadcast.emit('chat-message', { message: message, name: users[socket.id] })
+    socket.on('new-device', ({ id, name }) => {
+        const device = new Device(id, name, true)
+        api.device[socket.id] = device
     })
     socket.on('disconnect', () => {
-        socket.broadcast.emit('disconnected', users[socket.id])
-        delete users[socket.id]
+        api.device[socket.id].isActive = false
     })
 })
 server.listen().then(({ url }) => {
