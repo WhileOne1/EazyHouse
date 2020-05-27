@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import Thermometer from 'react-thermometer-component'
-
 const lightsQuery = gql` {
     thermometers {
       name
@@ -12,13 +11,19 @@ const lightsQuery = gql` {
   }`
 
 const Home = () => {
+
     return (
+
         <Query query={lightsQuery}>
                 {({ loading, error, data }) => {
                     if (loading) return <div>Laduje dane</div>
                     if (error) return <div>Wystapil blad</div>
 
                     const thermometers = data.thermometers;
+                    
+        
+  
+                    
 
                     return (
                         <div>
@@ -27,9 +32,11 @@ const Home = () => {
                                 <p>
                                     <span><b>Tytul: </b></span>
                                 </p>
+                                
                                 {thermometers.map(device =>
+                                
                                     <p >
-                                        <span dangerouslySetInnerHTML={{  __html:  'nazwa: ' + device.name + ' || czy podłączone: ' + device.value }}></span>
+                                        <span dangerouslySetInnerHTML={{  __html:  'nazwa: ' + device.name + ' ||temperatura: ' + device.value }}></span>
                                     </p>
                                 )}
                                 

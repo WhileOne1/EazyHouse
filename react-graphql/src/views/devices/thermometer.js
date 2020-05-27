@@ -14,21 +14,16 @@ const id = parseInt(val)
 
 const MainThermometer = () => {
     const [value, setValue] = useState(21);
-    useEffect(() => {
-
-
-    })
+    const socket = socketIOClient('http://localhost:2000')
 
 
 
 
     const [response, setResponse] = useState("");
     useEffect(() => {
-        const socket = socketIOClient('http://localhost:2000')
         const messageContainer = document.getElementById('message-container')
 
         
-        const type = 'thermometer'
         socket.emit('check-id', id)
 
         socket.on('new-id', id => {
@@ -49,6 +44,10 @@ const MainThermometer = () => {
         }
 
       }, []);
+      useEffect(() => {
+        socket.emit('send-thermometer-value', {id, value})
+  
+      },[value])
       
       const thermostyle = {
         padding: "20px",
