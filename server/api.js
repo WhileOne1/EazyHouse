@@ -20,12 +20,20 @@ const api = {
         {	
             id: 1,
             name: 'thermo',		
-            type: 'thermometer',
             room: 'kuchnia'	,
             status: false,
             value: 22, 	
         },
         
+    ],
+    switch: [
+        {
+            id: 1,
+            name: 'switch',		
+            room: 'kuchnia'	,
+            status: false,
+            isOn: false, 	 
+        }
     ]
 }
 

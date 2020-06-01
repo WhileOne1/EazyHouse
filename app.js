@@ -18,15 +18,63 @@ const resolvers = {
         lights: () => api.light,
         //thermometers: () => knex("thermometer").select("*"),
         thermometers: () => api.thermometer,
+        switches: () => api.switch,
         
     },
-    Mutation: {
-        createDevice: async (parent, {device_id,name,status}) => {
-            const [device] = await knex("devices")
-            .returning("*")
-            .insert({device_id, name, status});
-            
-            return device;
+      /*  Mutation: {
+            createDevice: async (parent, {device_id,name,status}) => {
+                const [device] = await knex("devices")
+                .returning("*")
+                .insert({device_id, name, status});
+                
+                return device;
+            }
+        }*/
+        Mutation: {
+            createSwitch: async (parent, {id,name,status,isOn,room}) => {
+                const switch1 = new Switch(id,name, status, isOn, room)
+                api.switch.push(switch1)
+                return switch1;
+
+        },
+            editSwitch: async (parent, {id,name,room, isOn}) => {
+                for (var i in api.switch){
+                    if (api.switch[i].id == id){
+                        if(api.switch[i].name !== 'undefined'){
+                            api.switch[i].name = name
+                        }
+                        
+
+                        if(api.switch[i].room !== 'undefined'){
+                            api.switch[i].room = room
+                        }
+                        if(api.switch[i].isOn !== 'undefined'){
+                            api.switch[i].isOn = isOn
+                        }
+                         break;
+                     }
+                  }
+                  //return api.switch[i];
+
+        },
+        editSwitchValue: async (parent, {id, isOn}) => {
+            for (var i in api.switch){
+                if (api.switch[i].id == id){
+                    
+                    if(api.switch[i].isOn !== 'undefined'){
+                        api.switch[i].isOn = isOn
+
+                    }
+                     break;
+                 }
+              }
+             // return api.switch[i];
+            },
+            deleteSwitch: async (parent, {id,name,status,isOn,room}) => {
+                const switch1 = new Switch(id,name, status, isOn, room)
+                api.switch.push(switch1)
+                return switch1;
+
         }
     }
 };
@@ -37,11 +85,13 @@ const server = new ApolloServer({ typeDefs, resolvers });
 //socket.io
 const io = require('socket.io')(2000)
 
-class Device {
-    constructor(id, name, isActive) {
+class Switch {
+    constructor(id, name,isOn, status,room) {
         this.id = id
         this.name = name
-        this.isActive = isActive
+        this.isOn = isOn
+        this.status = status
+        this.room = room
     }
 }
 class Thermometer {
@@ -56,21 +106,37 @@ class Thermometer {
 const devicesId = {}
 
 io.on('connection', socket => {
-    socket.on('check-id', ( id ) => {
+    socket.on('check-id', ( {id,type} ) => {
+
         devicesId[socket.id] = id
         console.log(`${id}`);
-
+        if(type === 'thermometer'){
         const result = api.thermometer.find(obj => {
             return obj.id === id
           })
           console.log(`${result}`);
-        if(typeof result === 'undefined') {
+          if(typeof result === 'undefined') {
             socket.emit('new-id', id)
         }
         else
         {
             socket.emit('old-id', id)
         }
+        }
+        if(type === 'switch'){
+            const result = api.switch.find(obj => {
+                return obj.id === id
+              })
+              console.log(`${result}`);
+              if(typeof result === 'undefined') {
+                socket.emit('new-id', id)
+            }
+            else
+            {
+                socket.emit('old-id', id)
+            }
+        }
+
     })
     socket.on('old-thermometer', ( id ) => {
         
@@ -98,6 +164,30 @@ io.on('connection', socket => {
         }
     })
 
+    socket.on('old-switch', ( id ) => { 
+        console.log(`urządzenie o podanym id już istnieje`);
+        for (var i in api.switch){
+            if (api.switch[i].id == id){
+                 api.switch[i].status = true
+                 break;
+             }
+          }
+        })
+        socket.on('add-switch', ({ id, value }) => {
+            
+                const switch1 = new Switch(id,'Null', value, true, 'brak')
+                api.switch.push(switch1)
+                console.log(`${value}`);
+        })
+        socket.on('send-switch-value', ({id, value}) => {
+            for (var i in api.switch){
+                if (api.switch[i].id == id){
+                    api.switch[i].isOn = value
+                    break;
+                }
+            }
+        })
+
 
     socket.on('disconnect', () => {
         for (var i in api.thermometer){
@@ -105,8 +195,15 @@ io.on('connection', socket => {
                 api.thermometer[i].status = false
                 break;
             }
+        
         }
-
+        for (var i in api.switch){
+            if (api.switch[i].id == devicesId[socket.id]){
+                api.switch[i].status = false
+                break;
+            }
+        
+        }
 
         //if(typeof api.device[devicesId[socket.id]] !== 'undefined') {
         //api.device[devicesId[socket.id]].isActive = false

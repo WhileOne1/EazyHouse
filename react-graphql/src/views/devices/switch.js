@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
-function Random(props) {
-    const maxNumber = 35;
-    const randomNumber = Math.floor((Math.random() * maxNumber) + 1);
-    return randomNumber;
-  }
+import SwitchComponent from '../../components/switchComponent'
 const val = 2
 const id = parseInt(val)
-const type = 'thermometer'
+const type = 'switch'
 
 
 
-const MainThermometer = () => {
-    const [value, setValue] = useState(21);
+const MainSwitch = () => {
+    const [value, setValue] = useState(false);
     const socket = socketIOClient('http://localhost:2000')
 
-
-
-
-    const [response, setResponse] = useState("");
     useEffect(() => {
         const messageContainer = document.getElementById('message-container')
 
@@ -27,15 +19,15 @@ const MainThermometer = () => {
         socket.emit('check-id', {id,type})
 
         socket.on('new-id', id => {
-            socket.emit('add-thermometer', { id, value })
+            socket.emit('add-switch', { id, value })
         })
 
         socket.on('old-id', id => {
             
-            socket.emit('old-thermometer',  id )
+            socket.emit('old-switch',  id )
             appendMessage(`Urządzenie zostało podłączone`)
         })
-        socket.emit('send-thermometer-value', {id, value})
+        socket.emit('send-switch-value', {id, value})
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
@@ -45,7 +37,7 @@ const MainThermometer = () => {
 
       }, []);
       useEffect(() => {
-        socket.emit('send-thermometer-value', {id, value})
+        socket.emit('send-switch-value', {id, value})
   
       },[value])
       
@@ -62,23 +54,12 @@ const MainThermometer = () => {
     return (
         <div >
             <div style={thermostyle}>
-           <Thermometer
-            theme="light"
-            value={value}
-            max="100"
-            steps="3"
-            format="°C"
-            size="large"
-            height="300"
-            /> 
+            <SwitchComponent  isItOn={value}
+             handleToggle={() => setValue(!value)}/>
+             {value}
             </div>
             <div style={thermostyle}>
-            <button onClick={() => setValue(value + 1)}>
-            zwiększ temperaturę
-            </button>
-            <button onClick={() => setValue(value - 1)}>
-            zmiejsz temperaturę
-            </button>
+
             </div>
 
         
@@ -87,4 +68,4 @@ const MainThermometer = () => {
         </div>
     )
 };
-export default MainThermometer;
+export default MainSwitch;
