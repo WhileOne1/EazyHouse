@@ -17,6 +17,10 @@ const typeDefs = gql`
       isActive: Boolean!
       isOn: Boolean!
       }
+      type room {
+         id: ID!
+         name: String!
+      }
       type switch {
          id: ID!
          name: String 
@@ -25,7 +29,7 @@ const typeDefs = gql`
          room: String
          }
       type thermometer {
-         thermometer_id: ID!
+         id: ID!
          name: String
          value: Int!
          room: String
@@ -43,7 +47,6 @@ const typeDefs = gql`
         createSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String): switch,
         editSwitch(id: ID,name: String,room: String): switch,
         deleteSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String): switch,
-        editSwitchValue(id: ID!,isOn: Boolean!): switch,
      }
 `;
 

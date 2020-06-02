@@ -27,6 +27,13 @@ const MainSwitch = () => {
             socket.emit('old-switch',  id )
             appendMessage(`Urządzenie zostało podłączone`)
         })
+        socket.on('value', ( {id1, isOn} ) => {
+            if(id1 == id)
+            {
+              setValue(isOn)
+            }
+
+        })
         socket.emit('send-switch-value', {id, value})
 
         function appendMessage(message) {
@@ -54,7 +61,7 @@ const MainSwitch = () => {
     return (
         <div >
             <div style={thermostyle}>
-            <SwitchComponent  isItOn={value}
+            <SwitchComponent  isItOn={value} switchid={id}
              handleToggle={() => setValue(!value)}/>
              {value}
             </div>

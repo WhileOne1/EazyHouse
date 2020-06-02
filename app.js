@@ -12,6 +12,7 @@ const knex = require('knex')({
         database: "SmartHouse"
     }
   });
+
 const resolvers = {
     Query: {
         devices: () => knex("devices").select("*"),
@@ -37,7 +38,7 @@ const resolvers = {
                 return switch1;
 
         },
-            editSwitch: async (parent, {id,name,room, isOn}) => {
+            editSwitch: async (parent, {id,name}) => {
                 for (var i in api.switch){
                     if (api.switch[i].id == id){
                         if(api.switch[i].name !== 'undefined'){
@@ -45,31 +46,14 @@ const resolvers = {
                         }
                         
 
-                        if(api.switch[i].room !== 'undefined'){
-                            api.switch[i].room = room
-                        }
-                        if(api.switch[i].isOn !== 'undefined'){
-                            api.switch[i].isOn = isOn
-                        }
+
                          break;
                      }
                   }
                   //return api.switch[i];
 
         },
-        editSwitchValue: async (parent, {id, isOn}) => {
-            for (var i in api.switch){
-                if (api.switch[i].id == id){
-                    
-                    if(api.switch[i].isOn !== 'undefined'){
-                        api.switch[i].isOn = isOn
-
-                    }
-                     break;
-                 }
-              }
-             // return api.switch[i];
-            },
+        
             deleteSwitch: async (parent, {id,name,status,isOn,room}) => {
                 const switch1 = new Switch(id,name, status, isOn, room)
                 api.switch.push(switch1)
@@ -136,8 +120,14 @@ io.on('connection', socket => {
                 socket.emit('old-id', id)
             }
         }
+    
 
     })
+    socket.on('test', () => {            
+         console.log(`działa`);
+    })
+
+
     socket.on('old-thermometer', ( id ) => {
         
             console.log(`urządzenie o podanym id już istnieje`);
@@ -151,7 +141,7 @@ io.on('connection', socket => {
     })
     socket.on('add-thermometer', ({ id, value }) => {
         
-            const thermometer = new Thermometer(id,'Null', value, true, 'brak')
+            const thermometer = new Thermometer(id,'Nowe Urządzenie', value, true, 'nie przypisano')
             api.thermometer.push(thermometer)
             console.log(`${value}`);
     })
@@ -175,7 +165,7 @@ io.on('connection', socket => {
         })
         socket.on('add-switch', ({ id, value }) => {
             
-                const switch1 = new Switch(id,'Null', value, true, 'brak')
+                const switch1 = new Switch(id,'Nowe Urządzenie', value, true, 'nie przypisano')
                 api.switch.push(switch1)
                 console.log(`${value}`);
         })
@@ -186,6 +176,10 @@ io.on('connection', socket => {
                     break;
                 }
             }
+        })
+        socket.on('change-switch-value', ({id1, isOn}) => {
+            console.log(`${id1}`);
+            socket.broadcast.emit('value',{id1,isOn})
         })
 
 

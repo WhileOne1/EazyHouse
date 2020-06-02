@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Query,useQuery, Mutation, useMutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import SwitchComponent from '../../components/switchComponent'
+import {socket} from '../../components/header'
+
  const GET_SWITCHES = gql` {
     switches {
         id
@@ -10,121 +12,123 @@ import SwitchComponent from '../../components/switchComponent'
       status
       room
     }
+    thermometers {
+      id
+    name
+    value
+    status
+    room
+  },
 
-  }` 
-  const POST_SWITCHES = gql`
-  mutation editSwitchValue($id: ID!, $isOn: boolean!) {
-    editSwitchValue(id: $id,isOn: $isOn) {
-      isOn
-    }
+  }` ;
+ const POST_SWITCHES = gql`
+mutation editSwitch($id: ID!, $name: String!) {
+  editSwitch(id: $id,name: $name) {
+    id
   }
-`;
+}
+`;  
 const Home = () => {
-    const [value, setValue] = useState(false);
-
-    const {loading, data} = useQuery(GET_SWITCHES)
-    
-    const [editSwitchValue, {error}] = useMutation(POST_SWITCHES, {
-        variables: {value}, refetchQueries: ["switches"]
-    })
-    if(error){
-        console.log('error: ',error)
-    }
-    if (loading) return <h2>loading...</h2>
-    return (
-        data.switches.map(({id,name,status,room,isOn}) =>{
-                        
-            let input;
-            
-            return(
-             <div>
-                
+return (
+<Query query={GET_SWITCHES} pollInterval={500}>
+    {({ loading, error, data }) => {
+      if (loading) return 'Loading...';
+      if (error) return `Error! ${error.message}`;
+      let input;
+      return (
+        <div>
+            {data.switches.map(device => (
                 <div>
-                    <p>
-                        <span><b>{name}: </b></span>
-                    </p>
-                    
-                    
-                    <p>
-                    {"id: " + id +" nazwa: " + name + " status: "+  status + " isOn: " + isOn + " pokój: " + room }
-                    </p>
-                   
-                   
-                   
-                </div>
-                <SwitchComponent  isItOn={isOn}
-                            handleToggle={(e) =>  editSwitchValue({variables:{  id, isOn: true } })}/>
-                </div> 
-                    )}))
-        
-/* 
-        <Query query={GET_SWITCHES}  pollInterval={500}>
-                {({ loading, error, data }) => {
-                    if (loading) return <div>Laduje dane</div>
-                    if (error) return <div>Wystapil blad</div>
-
-                    const thermometers = data.switches;
-                    
-        
-  
-                    
-                    
-                    return thermometers.map(({id,name,status,room,isOn}) =>{
-                        
-                        let input;
-                        
-                        return(
-                         <div>
-                            <h1>GraphQL response:</h1>
-                            <div>
-                                <p>
-                                    <span><b>Tytul: </b></span>
+                  <p>
+                                    <span><b> {device.name+":"} </b></span>
                                 </p>
-                                
-                                
                                 <p>
-                                {"id: " + id +" nazwa: " + name + " status: "+  status + " isOn: " + isOn + " pokój: " + room }
+                                {"id: " + device.id + " status: "+  device.status + " isOn: " + device.isOn + " pokój: " + device.room}
                                 </p>
-                               
-                               
-                               
-                            </div>
-                         
-                        <Mutation mutation={POST_SWITCHES} key={id}>
-                        {editSwitchValue => (
-                          <div key={id}>
+				                    <SwitchComponent  isItOn={device.isOn} switchid={device.id}
+                            handleToggle={(e) => {e.preventDefault(); 
+                            //editSwitch({variables:{  id: device.id, isOn: !device.isOn } })
+                            socket.emit('change-switch-value',{id1: device.id,isOn: !device.isOn})
+                            }}/>
+                            <Mutation mutation={POST_SWITCHES} >
+                        {(editSwitch, {data}) => (
+                          <div>
                             
                              <form
                               onSubmit={e => {
                                 e.preventDefault();
-                                editSwitchValue({ variables: { id, isOn: input.value } });
+                                editSwitch({ variables: { id: device.id, name: input.value } });
             
-                                input.value = false;
+                                input.value = "";
                               }}
                             >
-                              <input type="radio"
+                              <input type="text"
                                 ref={node => {
                                   input = node;
                                 }}
                               />
-                              <button type="submit">Update Todo</button>
-                            </form>
-                              
-                            <SwitchComponent  isItOn={isOn}
-                            handleToggle={() =>  editSwitchValue({variables:{  id, isOn: true } })}/>
+                              <button type="submit">Zmień nazwę</button>
+                            </form> 
                             
                             
 
                           </div>
                         )}
                       </Mutation>
-                      </div> 
-                    )})
-                }}
-            </Query>
+                </div>
+            ))}
+            {data.thermometers.map(device => (
+              <div>
+                 <p>
+                                    <span><b> {device.name+":"} </b></span>
+                                </p>
+                                <p>
+                                {"id: " + device.id + " status: "+  device.status + " isOn: " + device.value + " pokój: " + device.room}
+                                </p>
+
+
+
+             </div>
+
+            ))}              
+        </div>
+                          
+      );
+    }}
+  </Query>
+        
+
             
     );
-     */
+
+    
 };
 
+
+
 export default Home;
+                          {/* <Mutation mutation={POST_SWITCHES} >
+                        {(editSwitch, {data}) => (
+                          <div>
+                            
+                             <form
+                              onSubmit={e => {
+                                e.preventDefault();
+                                editSwitch({ variables: { id: device.id, name: input.value } });
+            
+                                input.value = "";
+                              }}
+                            >
+                              <input type="text"
+                                ref={node => {
+                                  input = node;
+                                }}
+                              />
+                              <button type="submit">Zmień nazwę</button>
+                            </form> 
+                            
+                            
+
+                          </div>
+                        )}
+                      </Mutation> */} 
