@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
 import SwitchComponent from '../../components/switchComponent'
-const val = 3
+const val = 6
 const id = parseInt(val)
-const type = 'switch'
+const type = 'Gate'
 
 
 
-const MainSwitch = () => {
+const MainGate = () => {
     const [value, setValue] = useState(false);
     const socket = socketIOClient('http://localhost:2000')
 

@@ -1,15 +1,10 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-     type device {
-        device_id: ID!
+     interface Devices {
+        id: ID!
         name: String!
-        status: Boolean!
-     }
-     input DeviceInput {
-      id: ID!
-      name: String!
-      isActive: Boolean!
+        room: String!
      }
       type light {
       id: ID!
@@ -17,35 +12,42 @@ const typeDefs = gql`
       isActive: Boolean!
       isOn: Boolean!
       }
-      type room {
+      type switch implements Devices  {
          id: ID!
-         name: String!
-      }
-      type switch {
-         id: ID!
-         name: String 
+         name: String! 
          status: Boolean!
          isOn: Boolean!
-         room: String
+         room: String!
          }
-      type thermometer {
+      type thermometer implements Devices {
          id: ID!
-         name: String
+         name: String!
          value: Int!
-         room: String
+         room: String!
+         status: Boolean!
+      }
+      type fridge implements Devices {
+         id: ID!
+         name: String!
+         value: Int!
+         room: String!
          status: Boolean!
       }
      type Query {
-        devices: [device!]!,
+        devices: [Devices!]!,
         lights: [light!]!,
         thermometers: [thermometer!]!,
         switches: [switch!]!,
+        fridges: [fridge!]!,
+
         
      }
      type Mutation {
-        createDevice(device_id: ID!, name: String!, status: Boolean!): device,
+        
         createSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String): switch,
-        editSwitch(id: ID,name: String,room: String): switch,
+        editSwitch(id: ID,name: String): switch,
+        editThermometer(id: ID,name: String): thermometer,
+        editFridge(id: ID,name: String): fridge,
         deleteSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String): switch,
      }
 `;

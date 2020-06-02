@@ -1,11 +1,19 @@
 .Header {
-    display: grid;
-    grid-template-areas: "logo nav"
+    text-align:center;
 }
 .Nav {
-    grid-area: nav;
-    display: grid;
-    grid-template-columns: repeat(4,auto);
+    
+    display: flex;
+    justify-content: space-around;
     align-items: center;
-    justify-items: center;
+    min-height: 10vh;
+    background: rgb(73,79,82);
+    color: white;
+}
+.Nav-Links {
+    width: 50%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style: none;
 }

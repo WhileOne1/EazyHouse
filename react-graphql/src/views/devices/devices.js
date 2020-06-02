@@ -1,34 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import socketIOClient from "socket.io-client";
+import React from 'react';
+import { NavLink } from "react-router-dom";
 
 const device = () => {
-    const [response, setResponse] = useState("");
-    useEffect(() => {
-        const socket = socketIOClient('http://localhost:2000')
-        const messageContainer = document.getElementById('message-container')
-
-        const val = prompt('Id urzadzenia')
-        const id = parseInt(val)
-        socket.emit('check-id', id)
-        socket.on('new-id', id => {
-            const name = prompt('Nazwa urzadzenia')
-            socket.emit('new-device', { id, name })
-            appendMessage(`Nowe urządzenie zostało dodane`)
-        })
-        socket.on('old-id', id => {
-            
-            socket.emit('old-device',  id )
-            appendMessage(`Urządzenie zostało podłączone`)
-        })
-
-        function appendMessage(message) {
-            const messageElement = document.createElement('div')
-            messageElement.innerText = message
-            messageContainer.append(messageElement)
-        }
-      }, []);
+    const navStyle = {
+       color: 'white' 
+    }
     return (
-        <div id="message-container"></div>
+        
+        
+        <nav className="Nav">
+          <ul className="NavClass">
+            <li>
+              <NavLink style={navStyle} to="/devices/switch">switch </NavLink>
+            </li>
+            <li>
+              <NavLink style={navStyle} to="/devices/thermometer">termometr </NavLink>
+            </li  >
+            <li>
+              <NavLink style={navStyle} to="/devices/fridge">fridge </NavLink>
+            </li  >
+          </ul>
+        </nav>
+
+        
     );
 };
 export default device;

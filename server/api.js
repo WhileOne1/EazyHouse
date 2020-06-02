@@ -1,11 +1,17 @@
 const api = {
-    device: [
-        {	
-            id: 1,	
-            name: 'urządzenie nr 1',	
-            isActive: false	
+    devices:[
+        {
+            id: 1,
+            name:'thermo',
+            room: 'kuchnia',
+
         },
-        
+        {
+            id: 4,
+            name: 'switch',		
+            room: 'kuchnia',
+
+        },
     ],
     light: [
         {	
@@ -28,12 +34,16 @@ const api = {
     ],
     switch: [
         {
-            id: 1,
+            id: 4,
             name: 'switch',		
             room: 'kuchnia'	,
             status: false,
             isOn: false, 	 
         }
+    ],
+    fridge: [
+
+
     ]
 }
 
