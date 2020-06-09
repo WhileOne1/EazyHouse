@@ -1,9 +1,10 @@
 import React from 'react';
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const device = () => {
     const navStyle = {
-       color: 'white' 
+       color: 'white' ,
+       textDecoration: 'none',
     }
     return (
         
@@ -11,13 +12,16 @@ const device = () => {
         <nav className="Nav">
           <ul className="NavClass">
             <li>
-              <NavLink style={navStyle} to="/devices/switch">switch </NavLink>
+              <Link style={navStyle} target="_blank" to="/devices/switch">switch </Link>
             </li>
             <li>
-              <NavLink style={navStyle} to="/devices/thermometer">termometr </NavLink>
+              <Link style={navStyle} target="_blank" to="/devices/thermometer">termometr </Link>
             </li  >
             <li>
-              <NavLink style={navStyle} to="/devices/fridge">fridge </NavLink>
+              <Link style={navStyle} target="_blank" to="/devices/fridge">fridge </Link>
+            </li  >
+            <li>
+              <Link style={navStyle} target="_blank" to="/devices/switch2">switch 2 </Link>
             </li  >
           </ul>
         </nav>

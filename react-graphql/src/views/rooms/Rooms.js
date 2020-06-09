@@ -168,12 +168,6 @@ return (
                             
                 
             ))}
-           <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
-            </TableRow>
             {data.thermometersbyroom.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right"> <DeviceName data={data.device.name}  data2={data.device.deviceid} />
@@ -185,12 +179,6 @@ return (
 
 
             ))}
-            <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
-            </TableRow> 
              {data.fridgesbyroom.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right">

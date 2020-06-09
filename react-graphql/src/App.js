@@ -10,6 +10,8 @@ import Rooms from './views/rooms/Rooms';
 import device from './views/devices/devices';
 import swiatlo from './views/devices/swiatlo';
 import register from './views/register/Register';
+import login from './views/login/Login';
+import Switch2 from './views/devices/switch';
 
 
 export default class App extends Component {
@@ -27,8 +29,9 @@ export default class App extends Component {
                 <Route path="/devices" component={device} />
                 <Route path="/rooms" component={Rooms} />
                 <Route path="/register" component={register} />
+                <Route path="/login" component={login} />
 
-
+                <Route path="/devices/switch2" component={Switch2} />
                 <Route path="/" component={home} />
             </Switch>
             </BrowserRouter>

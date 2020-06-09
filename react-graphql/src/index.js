@@ -14,7 +14,29 @@ const httpLink = createHttpLink(
         uri: 'http://localhost:4000/'
     }
 )
-
+/* httpLink.request([{
+    applyMiddleware(req, next) {
+        if (!req.options.headers) {
+            req.options.headers = {};
+        }
+        req.options.headers['x-token'] = localStorage.getItem('token');
+        req.options.headers['x-refresh-token'] = localStorage.getItem('refreshtoken');
+        next();
+    }
+}])
+httpLink.useAfter([{
+    applyAfterware({response: {headers}},next) {
+        const token = headers.get('x-token')
+        const refreshtoken = headers.get('x-refreshtoken-token')
+        if(token) {
+            localStorage.setItem('token',token);
+        }
+        if(refreshtoken) {
+            localStorage.setItem('token',refreshtoken);
+        }
+        next();
+    }
+}]) */
 const client = new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache()

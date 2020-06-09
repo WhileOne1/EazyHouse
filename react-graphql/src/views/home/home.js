@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import SwitchComponent from '../../components/switchComponent';
 import DeviceRoom from '../../components/mutations/deviceRoom';
 import DeviceName from '../../components/mutations/switchName';
+import DeleteDevice from '../../components/mutations/deleteDevice';
 import Indicator from '../../components/statusIndicator';
 import {socket} from '../../components/header';
 import Table from '@material-ui/core/Table';
@@ -30,7 +31,7 @@ const useStyles = makeStyles({
 
   },
   cellMain: {
-    border: '1px solid',
+    border: '1px solid black',
     width: '20%',
     textAlign: 'center',
     fontWeight: 'bold',
@@ -103,6 +104,7 @@ return (
               <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
               <TableCell className={classes.cellMain} align="right"> status</TableCell>
               <TableCell className={classes.cellMain} align="right"> stan</TableCell>
+              <TableCell className={classes.cellMain} align="right"> usuwanie</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -117,18 +119,11 @@ return (
                             handleToggle={(e) => {e.preventDefault(); 
                             socket.emit('change-switch-value',{id1: data.device.deviceid,isOn: !data.isOn})
                             }}/></div></TableCell> 
+                            <TableCell className={classes.cell} align="right"> <DeleteDevice deviceID={data.device.deviceid}/></TableCell>
               </TableRow>
-            
-          
-				                    
-                            
-                
             ))}
            <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
+
             </TableRow>
             {data.thermometers.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
@@ -137,17 +132,12 @@ return (
               </TableCell>
               <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-              <TableCell className={classes.cell} align="right"> {data.value}</TableCell>
+              <TableCell className={classes.cell} align="right"> <h2>{data.value}</h2></TableCell>
+              <TableCell className={classes.cell} align="right"> <DeleteDevice deviceID={data.device.deviceid}/></TableCell>
             </TableRow>
 
-
             ))}
-            <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
-            </TableRow> 
+
              {data.fridges.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right"><DeviceName data={data.device.name}  data2={data.device.deviceid} /></TableCell>
@@ -168,6 +158,7 @@ return (
                   -
             </button> 
             </TableCell>
+            <TableCell className={classes.cell} align="right"><DeleteDevice deviceID={data.device.deviceid}/></TableCell>
             </TableRow>
 
 

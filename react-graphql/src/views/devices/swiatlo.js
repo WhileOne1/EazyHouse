@@ -28,7 +28,6 @@ const MainSwitch = () => {
             appendMessage(`Urządzenie zostało podłączone`)
         })
         socket.on('value', ( {id1, isOn} ) => {
-          socket.emit('test')
             if(id1 == deviceid)
             {
               setValue(isOn)
@@ -43,7 +42,7 @@ const MainSwitch = () => {
             messageContainer.append(messageElement)
         }
 
-      },);
+      },[]);
       useEffect(() => {
         socket.emit('send-switch-value', {deviceid, value})
   

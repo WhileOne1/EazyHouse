@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
 import SwitchComponent from '../../components/switchComponent'
-const val = 3347589
+const val = 3347588
 const deviceid = parseInt(val)
 const type = 'switch'
 
@@ -29,6 +29,7 @@ const MainSwitch = () => {
             appendMessage(`Urządzenie zostało podłączone`)
         })
         socket.on('value', ( {id1, isOn} ) => {
+          socket.emit('test')
             if(id1 == deviceid)
             {
               setValue(isOn)

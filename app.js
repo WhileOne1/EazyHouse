@@ -14,38 +14,86 @@ const SwitchModel = require('./server/newmodels/Switch');
 const FridgeModel = require('./server/newmodels/Fridge');
 const UserModel = require('./server/newmodels/User');
 const DeviceModel = require('./server/newmodels/Device');
-
-//DeviceModel.hasOne(SwitchModel, { foreignKey: 'deviceid', foreignKeyConstraint: true })
+//const Auth =  require('./server/auth/auth');
 SwitchModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 ThermometerModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 FridgeModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
-//DeviceModel.hasOne(FridgeModel, { foreignKey: 'deviceid', foreignKeyConstraint: true })
-//DeviceModel.hasOne(ThermometerModel, { foreignKey: 'deviceid' })
 UserModel.hasMany(DeviceModel); 
 DeviceModel.belongsTo(UserModel)
+
 const SECRET = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1';
- sequelize.sync( {force: true} );
+const SECRET2 = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1dsgdfgsdfds';
+
+sequelize.sync( {force: true} );
 sequelize.authenticate()
     .then(() => console.log('db connected'))
     .catch(err => console.log(err)) 
+sequelize.sequelize = sequelize;
+sequelize.Sequelize = Sequelize;
 
+const formatErrors = (e) => {
+  if (e instanceof sequelize.Sequelize.ValidationError) {
+    return e.errors.map(x=> _.pick(x,['path','message']));
+  }
+  return [{path: 'name', message: 'something went wrong'}];
+}
+const createTokens = async (user, secret, secret2) => {
+  const createToken = jwt.sign(
+    {
+      user: _.pick(user, ['id']),
+    },
+    secret,
+    {
+      expiresIn: '1h',
+    },
+  );
+
+  const createRefreshToken = jwt.sign(
+    {
+      user: _.pick(user, 'id'),
+    },
+    secret2,
+    {
+      expiresIn: '7d',
+    },
+  );
+
+  return [createToken, createRefreshToken];
+};
+
+const refreshTokens = async (token, refreshTokenF) => {
+  let userId = -1;
+  try {
+    const { user: { id } } = jwt.decode(refreshToken);
+    userId = id;
+  } catch (err) {
+    return {};
+  }
+
+  if (!userId) {
+    return {};
+  }
+
+  const user = await UserModel.findOne({ where: { id: userId }, raw: true });
+
+  if (!user) {
+    return {};
+  }
+
+  try {
+    jwt.verify(refreshToken, user.refreshSecret);
+  } catch (err) {
+    return {};
+  }
+
+  const [newToken, newRefreshToken] = await createTokens(user, SECRET, user.refreshSecret);
+  return {
+    token: newToken,
+    refreshToken: newRefreshToken,
+    user,
+  };
+};
 const resolvers = {
-    /* Devices: {
-        __resolveType(devices, context, info){
-            if(devices.switch){
-              return 'Switch';
-            }
-      
-            if(devices.thermometer){
-              return 'Thermometer';
-            }
-      
-            return null;
-          },
-
-    }, */
-
-    
     Query: {
         
         
@@ -79,6 +127,13 @@ const resolvers = {
           }) 
 
     },
+    deleteDevice: async (parent, {deviceid}) => {
+        SwitchModel.destroy({where : {deviceid: deviceid}}) 
+        FridgeModel.destroy({where : {deviceid: deviceid}}) 
+        ThermometerModel.destroy({where : {deviceid: deviceid}}) 
+        DeviceModel.destroy({where : {deviceid: deviceid}}) 
+
+  },
     editDevice: async (parent, {deviceid,name}) => {
           DeviceModel.update(
             { name: name },
@@ -93,37 +148,70 @@ const resolvers = {
       )
 
     },
-    register: async (parent,args) => {
-      try{const user = args;
-      console.log({user});
-      user.password = await bcrypt.hash(user.password,12);
-       await UserModel.create(user);
-       return true;
+    register: async (parent,{password, username,email}) => {
+      try{
+        if(username.length < 3 || username.length > 25){
+          return {
+            ok: false,
+            errors:[{
+              path: 'username',
+              message: 'username must be between 3 and 25 characters long'
+            }]
+          }
+        }
+        if(password.length < 6 || username.length > 100){
+          return {
+            ok: false,
+            errors:[{
+              path: 'password',
+              message: 'password must be between 5 and 100 characters long'
+            }]
+          }
+        }
+      
+      hashedPassword = await bcrypt.hash(password,12);
+       const user = await UserModel.create({email,username,password: hashedPassword});
+       return {
+         ok: true,
+         user,
+
+       }
       }catch (err) {
-        return false;
+        return {
+          ok: false,
+          errors: formatErrors(err),
+        }
       }
 
     },
     login: async (parent,{email,password}) => {
-      const user = await UserModel.findOne({where: { email}});
-      if(!user) {
-        throw new Error('Not user with that email')
+      const user = await UserModel.findOne({ where: { email }, raw: true });
+      if (!user) {
+        // user with provided email not found
+        return {
+          ok: false,
+          errors: [{ path: 'email', message: 'Wrong email' }],
+        };
       }
-      const valid = await bcrypt.compare(password, user.password)
-      if(!valid)
-      {
-        throw new Error('incorrect password');
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) {
+        // bad password
+        return {
+          ok: false,
+          errors: [{ path: 'password', message: 'Wrong password' }],
+        };
       }
 
-      const token = jwt.sign({
-        user: _.pick(user, ['id','username']),
+      const refreshTokenSecret = user.password + SECRET2;
 
-      },
-      SECRET,
-      {
-        expiresIn: '1y',
-      })
-      return token;
+      const [token, refreshToken] = await createTokens(user, SECRET, refreshTokenSecret);
+
+      return {
+        ok: true,
+        token,
+        refreshToken,
+      };
+
     }
 
     }
@@ -131,7 +219,7 @@ const resolvers = {
 const schema = makeExecutableSchema({
     typeDefs,
     resolvers,
-    inheritResolversFromInterfaces: true
+    inheritResolversFromInterfaces: true,
   });
 
 
@@ -139,16 +227,6 @@ const server = new ApolloServer({ schema });
 //socket.io
 const io = require('socket.io')(2000)
 
-const addUser = async (req) => {
-  const token = req.headers.autorization;
-  try{
-    const {user} =await jwt.verify(token, SECRET);
-    req.user = user;
-  } catch(err) {
-    console.log(err);
-  }
-  res.next();
-}
 
 const devicesId = {}
 function isDeviceIdUnique (deviceid) {
@@ -187,7 +265,7 @@ io.on('connection', socket => {
     })
 
 
-    socket.on('old-device', ( deviceid = [] ) => {
+    socket.on('old-device', ( deviceid ) => {
         
             console.log(`urządzenie o podanym id już istnieje`);
             DeviceModel.update(

@@ -32,6 +32,15 @@ const typeDefs = gql`
          deviceid: Int!
          device: Device
       }
+      type Error {
+         path: String!
+         message: String
+      }
+      type RegisterResponse {
+         ok: Boolean!
+         user: User
+         errors: [Error!]
+      }
      type Query {
         devices: [Device!]!,
         devicesbyroom(room: String! ): [Device!]!,
@@ -45,13 +54,20 @@ const typeDefs = gql`
 
         
      }
+     type LoginResponse {
+        ok: Boolean!
+        token: String
+        refreshToken: String
+        errors: [Error!]
+     }
      type Mutation {
          createDevice(deviceid: Int!): Device,
+         deleteDevice(deviceid: Int!): Device,
          editDevice(deviceid: Int!,name: String!): Device,
          editDeviceRoom(deviceid: Int!,room: String!): Device,
 
-         register(username: String!, email: String!, password: String!): Boolean!
-         login(email: String!, password: String!): String!
+         register(username: String!, email: String!, password: String!): RegisterResponse!
+         login(email: String!, password: String!): LoginResponse!
      }
 `;
 

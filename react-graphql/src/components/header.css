@@ -2,11 +2,10 @@
     text-align:center;
 }
 .Nav {
-    
     display: flex;
     justify-content: space-around;
     align-items: center;
-    min-height: 10vh;
+    min-height: 15vh;
     background: rgb(73,79,82);
     color: white;
 }
@@ -14,6 +13,13 @@
     width: 50%;
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    align-items: right;
+    list-style: none;
+}
+.Log-Links {
+    width: 15%;
+    display: flex;
+    justify-content: space-around;
+    align-items: right;
     list-style: none;
 }
