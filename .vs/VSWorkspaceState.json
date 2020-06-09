@@ -3,10 +3,12 @@
     "",
     "\\react-graphql",
     "\\react-graphql\\src",
+    "\\react-graphql\\src\\components",
+    "\\react-graphql\\src\\views",
     "\\react-graphql\\src\\views\\devices",
     "\\react-graphql\\src\\views\\home",
     "\\server"
   ],
-  "SelectedNode": "\\server\\schema.js",
+  "SelectedNode": "\\react-graphql\\src\\views\\devices\\devices.js",
   "PreviewInSolutionExplorer": false
 }

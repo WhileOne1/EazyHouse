@@ -12,21 +12,6 @@ const api = {
             room: 'kuchnia',
 
         },
-        {
-            id: 8,
-            name: 'rgb',
-            room: 'kuchnia',
-
-        },
-    ],
-    light: [
-        {	
-            id: 20,	
-            name: 'światło 1',	
-            isActive: false	,
-            isOn: true,
-        },
-        
     ],
     thermometer: [
         {	
@@ -45,16 +30,6 @@ const api = {
             room: 'kuchnia'	,
             status: false,
             isOn: false, 	 
-        }
-    ],
-    rgb: [
-        {
-            id: 8,
-            name: 'rgb',
-            room: 'kuchnia',
-            status: false,
-            isOn: false,
-            color: 'Red',
         }
     ],
     fridge: [

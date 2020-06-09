@@ -1,119 +1,131 @@
 const { ApolloServer,makeExecutableSchema  } = require('apollo-server');
 const api = require('./server/api');
 const {Client} = require('pg');
+const bodyParser = require('body-parser');
 const typeDefs = require('./server/schema');
-const knex = require('knex')({
-    client: 'pg',
-    connection: {
-        user: "postgres",
-        password: "JUWvMc~y[wX<2.9J",
-        host: "127.0.0.1",
-        port: 5432,
-        database: "SmartHouse"
-    }
-  });
+const Sequelize = require('sequelize');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const _ = require('lodash');
+//Database
+ const sequelize = require('./server/config/database');
+const ThermometerModel = require('./server/newmodels/Thermometer');
+const SwitchModel = require('./server/newmodels/Switch');
+const FridgeModel = require('./server/newmodels/Fridge');
+const UserModel = require('./server/newmodels/User');
+const DeviceModel = require('./server/newmodels/Device');
+
+//DeviceModel.hasOne(SwitchModel, { foreignKey: 'deviceid', foreignKeyConstraint: true })
+SwitchModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
+ThermometerModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
+FridgeModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
+//DeviceModel.hasOne(FridgeModel, { foreignKey: 'deviceid', foreignKeyConstraint: true })
+//DeviceModel.hasOne(ThermometerModel, { foreignKey: 'deviceid' })
+UserModel.hasMany(DeviceModel); 
+DeviceModel.belongsTo(UserModel)
+const SECRET = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1';
+ sequelize.sync();
+sequelize.authenticate()
+    .then(() => console.log('db connected'))
+    .catch(err => console.log(err)) 
 
 const resolvers = {
-    Devices: {
+    /* Devices: {
         __resolveType(devices, context, info){
             if(devices.switch){
-              return 'switch';
+              return 'Switch';
             }
       
             if(devices.thermometer){
-              return 'thermometer';
+              return 'Thermometer';
             }
       
             return null;
           },
 
-    },
+    }, */
+
     
     Query: {
-        //devices: () => knex("devices").select("*"),
-        devices: () => api.thermometer,
-        lights: () => api.light,
-        //thermometers: () => knex("thermometer").select("*"),
-        thermometers: () => api.thermometer,
-        switches: () => api.switch,
-        fridges: () => api.fridge,
-        rgbs: () => api.rgb,      
-    },
-      /*  Mutation: {
-            createDevice: async (parent, {device_id,name,status}) => {
-                const [device] = await knex("devices")
-                .returning("*")
-                .insert({device_id, name, status});
-                
-                return device;
-            }
-        }*/
-        Mutation: {
-        createSwitch: async (parent, {id,name,status,isOn,room}) => {
-                const switch1 = new Switch(id,name, status, isOn, room)
-                api.switch.push(switch1)
-                return switch1;
-
-        },
-        editSwitch: async (parent, {id,name}) => {
-                for (var i in api.switch){
-                    if (api.switch[i].id == id){
-                        if(api.switch[i].name !== 'undefined'){
-                            api.switch[i].name = name
-                        }
-                         break;
-                     }
-                  }
-                  return api.switch[i];
-
-        },
-        createRgb: async (parent, { id, name, status, isOn, room, color }) => {
-                const rgb = new Rgb(id, name, status, isOn, room, color)
-                api.rgb.push(rgb)
-                return rgb;
-        },
-        editRgb: async (parent, { id, name }) => {
-             for (var i in api.rgb) {
-                if (api.rgb[i].id == id) {
-                    if (api.rgb[i].name !== 'undefined') {
-                         api.rgb[i].name = name
-                    }
-                    break;
-                }
-             }
-             return api.rgb[i];
-        },
-        editThermometer: async (parent, {id,name}) => {
-            for (var i in api.thermometer){
-                if (api.thermometer[i].id == id){
-                    if(api.thermometer[i].name !== 'undefined'){
-                        api.thermometer[i].name = name
-                    }
-                     break;
-                 }
-              }
-              return api.switch[i];
-
-        },
-        editFridge: async (parent, {id,name}) => {
-            for (var i in api.fridge){
-                if (api.fridge[i].id == id){
-                    if(api.fridge[i].name !== 'undefined'){
-                        api.fridge[i].name = name
-                    }
-                     break;
-                 }
-              }
-              return api.switch[i];
-
-        },
         
-        deleteSwitch: async (parent, {id,name,status,isOn,room}) => {
-                const switch1 = new Switch(id,name, status, isOn, room)
-                api.switch.push(switch1)
-                return switch1;
-
+        
+        thermometers: () => ThermometerModel.findAll({include:[  DeviceModel ]}),
+        switches: () => SwitchModel.findAll({include:[  DeviceModel ]}),
+        fridges: () => FridgeModel.findAll({include:[  DeviceModel ]}),
+        devices: () => DeviceModel.findAll({}),
+        distinctRoom: () => DeviceModel.findAll({attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('room')) ,'room'], ]}),
+        devicesbyroom: (parent, {room}) =>DeviceModel.findAll({ where: {room: room} }),
+        thermometersbyroom: (parent, {room}) => ThermometerModel.findAll({include:[  {model:DeviceModel ,where: {room: room}} ]}),
+        switchesbyroom: (parent, {room}) =>SwitchModel.findAll({include:[  {model:DeviceModel ,where: {room: room}} ]}),
+        fridgesbyroom: (parent, {room}) => FridgeModel.findAll({include:[  {model:DeviceModel,where: {room: room}} ]}),
+        
+    },
+    Mutation: {
+      createDevice: async (parent, {deviceid}) => {
+        const data = {
+            status:true, 
+            name: 'nowe urządzenie', 
+            room: 'brak przypisania'
         }
+        console.log(deviceid)
+        let {status,name,room,}= data;
+          
+          DeviceModel.create({
+            
+            name, 
+            status, 
+            room,
+            deviceid
+          }) 
+
+    },
+    editDevice: async (parent, {deviceid,name}) => {
+          DeviceModel.update(
+            { name: name },
+            { where: { deviceid: deviceid } }
+          )
+
+    },
+    editDeviceRoom: async (parent, {deviceid,room}) => {
+      DeviceModel.update(
+        { room: room },
+        { where: { deviceid: deviceid } }
+      )
+
+    },
+    register: async (parent,args) => {
+      try{const user = args;
+      console.log({user});
+      user.password = await bcrypt.hash(user.password,12);
+       await UserModel.create(user);
+       return true;
+      }catch (err) {
+        return false;
+      }
+
+    },
+    login: async (parent,{email,password}) => {
+      const user = await UserModel.findOne({where: { email}});
+      if(!user) {
+        throw new Error('Not user with that email')
+      }
+      const valid = await bcrypt.compare(password, user.password)
+      if(!valid)
+      {
+        throw new Error('incorrect password');
+      }
+
+      const token = jwt.sign({
+        user: _.pick(user, ['id','username']),
+
+      },
+      SECRET,
+      {
+        expiresIn: '1y',
+      })
+      return token;
+    }
+
     }
 };
 const schema = makeExecutableSchema({
@@ -124,105 +136,49 @@ const schema = makeExecutableSchema({
 
 
 const server = new ApolloServer({ schema });
-
 //socket.io
 const io = require('socket.io')(2000)
 
-class Switch {
-    constructor(id, name,isOn, status,room) {
-        this.id = id
-        this.name = name
-        this.isOn = isOn
-        this.status = status
-        this.room = room
-    }
+const addUser = async (req) => {
+  const token = req.headers.autorization;
+  try{
+    const {user} =await jwt.verify(token, SECRET);
+    req.user = user;
+  } catch(err) {
+    console.log(err);
+  }
+  res.next();
 }
-class Thermometer {
-    constructor(id, name, value, status, room) {
-        this.id = id
-        this.name = name
-        this.value = value
-        this.status = status
-        this.room = room
-    }
-}
-class Fridge {
-    constructor(id, name, value, status, room) {
-        this.id = id
-        this.name = name
-        this.value = value
-        this.status = status
-        this.room = room
-    }
-}
-class Rgb {
-    constructor(id, name, value, status, room, color) {
-        this.id = id
-        this.name = name
-        this.value = value
-        this.status = status
-        this.room = room
-        this.color = color
-    }
-}
+
 const devicesId = {}
+function isDeviceIdUnique (deviceid) {
+  return DeviceModel.count({ where: { deviceid: deviceid  } })
+    .then(count => {
+      if (count != 0) {
+        return false;
+      }
+      return true;
+  });
+}
 
 io.on('connection', socket => {
-    socket.on('check-id', ( {id,type} ) => {
+    socket.on('check-id', ( {deviceid} ) => {
 
-        devicesId[socket.id] = id
-        console.log(`${id}`);
-        if(type === 'thermometer'){
-        const result = api.thermometer.find(obj => {
-            return obj.id === id
-          })
-          console.log(`${result}`);
-          if(typeof result === 'undefined') {
-            socket.emit('new-id', id)
-        }
-        else
-        {
-            socket.emit('old-id', id)
-        }
-        }
-        if(type === 'switch'){
-            const result = api.switch.find(obj => {
-                return obj.id === id
-              })
-              console.log(`${result}`);
-              if(typeof result === 'undefined') {
-                socket.emit('new-id', id)
-            }
-            else
-            {
-                socket.emit('old-id', id)
-            }
-        }
-        if(type === 'fridge'){
-            const result = api.fridge.find(obj => {
-                return obj.id === id
-              })
-              console.log(`${result}`);
-              if(typeof result === 'undefined') {
-                socket.emit('new-id', id)
-            }
-            else
-            {
-                socket.emit('old-id', id)
-            }
-        }
-        if (type === 'rgb') {
-            const result = api.rgb.find(obj => {
-                return obj.id === id
+        devicesId[socket.id] = deviceid
+        console.log(`${deviceid}`);
+        
+        isDeviceIdUnique(deviceid).then(isUnique =>{
+                if (isUnique){
+                    socket.emit('new-id', deviceid)
+                    console.log(`${deviceid}`);
+                }
+                else
+                {
+                    socket.emit('old-id', deviceid)
+                }
             })
-            console.log(`${result}`);
-            if (typeof result === 'undefined') {
-                socket.emit('new-id', id)
-            }
-            else {
-                socket.emit('old-id', id)
-            }
-        }
+            
+        
     
 
     })
@@ -231,168 +187,105 @@ io.on('connection', socket => {
     })
 
 
-    socket.on('old-thermometer', ( id ) => {
+    socket.on('old-device', ( deviceid = [] ) => {
         
             console.log(`urządzenie o podanym id już istnieje`);
-            for (var i in api.thermometer){
-                if (api.thermometer[i].id == id){
-                    api.thermometer[i].status = true
-                    break;
-                }
-            }
+            DeviceModel.update(
+                { status: true },
+                { where: { deviceid: deviceid  } }
+              )
 
     })
-    socket.on('add-thermometer', ({ id, value }) => {
-        
-            const thermometer = new Thermometer(id,'Nowe Urządzenie', value, true, 'nie przypisano')
-            api.thermometer.push(thermometer)
-            console.log(`${value}`);
-    })
-    socket.on('send-thermometer-value', ({id, value}) => {
-        for (var i in api.thermometer){
-            if (api.thermometer[i].id == id){
-                api.thermometer[i].value = value
-                break;
-            }
-        }
-    })
-
-    socket.on('old-switch', ( id ) => { 
-        console.log(`urządzenie o podanym id już istnieje`);
-        for (var i in api.switch){
-            if (api.switch[i].id == id){
-                 api.switch[i].status = true
-                 break;
-             }
-          }
-        })
-        socket.on('add-switch', ({ id, value }) => {
+    socket.on('add-device', ({ deviceid,type }) => {
+      console.log(`${deviceid}`);
+            const device = {name:'Nowe Urządzenie', status:true, room:'nie przypisano'}
+            let{name,status,room}= device
+              if(type == 'thermometer')
+              {
+                DeviceModel.create({
+                
+                  name, 
+                  status,
+                  room,
+                  deviceid
+                }).then(() =>{
+                  ThermometerModel.create(
+                    {deviceid}
+                  )})
+              }
+              if(type == 'switch')
+              {
+                DeviceModel.create({
+                
+                  name, 
+                  status,
+                  room,
+                  deviceid
+                }).then(() =>{
+                  SwitchModel.create(
+                    {deviceid}
+                  )})
+                 
+              }
+              if(type == 'fridge')
+              {
+                DeviceModel.create({
+                
+                  name, 
+                  status,
+                  room,
+                  deviceid
+                }).then(() =>{
+                  FridgeModel.create(
+                    {deviceid}
+                  )})
+              }
             
-                const switch1 = new Switch(id,'Nowe Urządzenie', value, true, 'nie przypisano')
-                api.switch.push(switch1)
-                console.log(`${value}`);
-        })
-        socket.on('send-switch-value', ({id, value}) => {
-            for (var i in api.switch){
-                if (api.switch[i].id == id){
-                    api.switch[i].isOn = value
-                    break;
-                }
-            }
+    })
+    //thermometer
+    socket.on('send-thermometer-value', ({deviceid, value}) => {
+        ThermometerModel.update(
+            { value: value },
+            { where: { deviceid: deviceid  } }
+          )
+    })
+//Switch
+        socket.on('send-switch-value', ({deviceid , value}) => {
+            SwitchModel.update(
+                { isOn: value },
+                { where: { deviceid: deviceid  } }
+              )
         })
         socket.on('change-switch-value', ({id1, isOn}) => {
             console.log(`${id1}`);
             socket.broadcast.emit('value',{id1,isOn})
         })
-
-        socket.on('old-fridge', ( id ) => { 
-            console.log(`urządzenie o podanym id już istnieje`);
-            for (var i in api.fridge){
-                if (api.fridge[i].id == id){
-                     api.fridge[i].status = true
-                     break;
-                 }
-              }
-            })
-            socket.on('add-fridge', ({ id, value }) => {
-                
-                    const fridge = new Fridge(id,'Nowe Urządzenie', value, true, 'nie przypisano')
-                    api.fridge.push(fridge)
-                    console.log(`${value}`);
-            })
-            socket.on('send-fridge-value', ({id, value}) => {
-                for (var i in api.fridge){
-                    if (api.fridge[i].id == id){
-                        api.fridge[i].value = value
-                        break;
-                    }
-                }
+//*Switch
+//Fridge
+            socket.on('send-fridge-value', ({deviceid , value}) => {
+                FridgeModel.update(
+                    { value: value },
+                    { where: { deviceid: deviceid  } }
+                  )
             })
             socket.on('change-fridge-value', ({id1, value}) => {
-                console.log(`${value}`);
+                console.log(`${id1}`);
                 socket.broadcast.emit('fridge-value',{id1,value})
             })
-
-
-            socket.on('old-rgb', (id) => {
-                console.log(`urządzenie o podanym id już istnieje`);
-                for (var i in api.rgb) {
-                   if (api.rgb[i].id == id) {
-                       api.rgb[i].status = true
-                       break;
-                   }
-                }
-            })
-           socket.on('add-rgb', ({ id, value }) => {
-               const rgb = new Rgb(id, 'Nowe Urządzenie', value, true, 'nie przypisano', 'Red')
-               api.rgb.push(rgb)
-               console.log(`${value}`);
-           })
-           socket.on('send-rgb-value', ({ id, value }) => {
-                 for (var i in api.rgb) {
-                     if (api.rgb[i].id == id) {
-                        api.rgb[i].isOn = value
-                        break;
-                     }
-                  }
-            })
-           socket.on('change-rgb-value', ({ id1, isOn }) => {
-               console.log(`${id1}`);
-               socket.broadcast.emit('value', { id1, isOn })
-           })
-           socket.on('send-rgb-color', ({ id, color }) => {
-                 for (var i in api.rgb) {
-                      if (api.rgb[i].id == id) {
-                          api.rgb[i].color = color
-                          break;
-                       }
-                 }
-           })
-           socket.on('change-rgb-color', ({ id, color }) => {
-                console.log(`${id}`);
-                socket.broadcast.emit('value', { id, color })
-           })
-
+//*Fridge
 
     socket.on('disconnect', () => {
-        for (var i in api.thermometer){
-            if (api.thermometer[i].id == devicesId[socket.id]){
-                api.thermometer[i].status = false
-                break;
-            }
-        
-        }
-        for (var i in api.switch){
-            if (api.switch[i].id == devicesId[socket.id]){
-                api.switch[i].status = false
-                break;
-            }
-        
-        }
-        for (var i in api.fridge){
-            if (api.fridge[i].id == devicesId[socket.id]){
-                api.fridge[i].status = false
-                break;
-            }
-        
-        }
-        for (var i in api.rgb) {
-            if (api.rgb[i].id == devicesId[socket.id]) {
-                api.rgb[i].status = false
-                break;
-            }
-
-        }
-
-        //if(typeof api.device[devicesId[socket.id]] !== 'undefined') {
-        //api.device[devicesId[socket.id]].isActive = false
-        //}
+        DeviceModel.update(
+            { status: false },
+            { where: { deviceid: devicesId[socket.id]  } }
+          )
         delete devicesId[socket.id]
     })
 })
-
+//models.sequelize.sync().then(() => d{
 server.listen().then(({ url }) => {
     console.log(`server listen at ${url}`);
     
-});
+})
+//})
 
