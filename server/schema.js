@@ -50,7 +50,7 @@ const typeDefs = gql`
          editDevice(deviceid: Int!,name: String!): Device,
          editDeviceRoom(deviceid: Int!,room: String!): Device,
 
-         register(username: String!, email: String!, password: String!): User!
+         register(username: String!, email: String!, password: String!): Boolean!
          login(email: String!, password: String!): String!
      }
 `;

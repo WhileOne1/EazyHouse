@@ -15,26 +15,26 @@ const useStyles = makeStyles({
     textAlign: 'center',
   }
 });
-const POST_DEVICE = gql`
-mutation editDevice($deviceid: Int!, $name: String!) {
-  editDevice(deviceid: $deviceid,name: $name) {
+const POST_DEVICE_ROOM = gql`
+mutation editDeviceRoom($deviceid: Int!, $room: String!) {
+    editDeviceRoom(deviceid: $deviceid,room: $room) {
     deviceid
   }
 }
 `; 
-const SwitchName = ({data,data2}) => {
+const DeviceRoom = ({deviceName,deviceID}) => {
   const classes = useStyles();
   let input;
   return(
-    <Popup trigger={<Button variant="contained" className={classes.button}> {data}</Button>} position="right center">
-            <div> <Mutation mutation={POST_DEVICE} >
+    <Popup trigger={<Button variant="contained" classname={classes.button}> {deviceName}</Button>} position="right center">
+            <div> <Mutation mutation={POST_DEVICE_ROOM} >
                                         {(editThermometer, {data3}) => (
                                           <div>
                                             
                                             <form
                                               onSubmit={e => {
                                                 e.preventDefault();
-                                                editThermometer({ variables: { deviceid: data2, name: input.value } });
+                                                editThermometer({ variables: { deviceid: deviceID, room: input.value } });
                             
                                                 input.value = "";
                                               }}
@@ -52,4 +52,4 @@ const SwitchName = ({data,data2}) => {
   </Popup>
   )
 };
-export default graphql(POST_DEVICE)(SwitchName);
+export default graphql(POST_DEVICE_ROOM)(DeviceRoom);

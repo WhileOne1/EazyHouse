@@ -93,7 +93,7 @@ const resolvers = {
       )
 
     },
-    register: async (parent,args={username,email,password}) => {
+    register: async (parent,args) => {
       try{const user = args;
       console.log({user});
       user.password = await bcrypt.hash(user.password,12);
