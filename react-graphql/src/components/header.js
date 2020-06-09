@@ -18,14 +18,14 @@ class Header extends Component  {
           <h3>EazyHouse</h3>
           <ul className="Nav-Links">
             <li>
-              <NavLink style={navStyle} to="/">Strona Główna </NavLink>
+              <NavLink style={navStyle} to="/">Wszystkie urządzenia</NavLink>
             </li>
             <li>
-              <NavLink style={navStyle} to="/devices">Urządzenia </NavLink>
-            </li  >
+              <NavLink style={navStyle} to="/devices">Symulowanie urządzeń</NavLink>
+            </li>
             <li>
-              <NavLink style={navStyle} to="/rooms">Pokoje </NavLink>
-            </li  >
+              <NavLink style={navStyle} to="/rooms">Pokoje</NavLink>
+            </li>
           </ul>
         </nav>
       </header>

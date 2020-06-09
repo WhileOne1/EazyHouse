@@ -144,59 +144,34 @@ return (
           <TableHead>
             <TableRow>
               <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
               <TableCell className={classes.cellMain} align="right"> status</TableCell>
               <TableCell className={classes.cellMain} align="right"> stan</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {(data.switchesbyroom).map(data => (
-                
-
-              <TableRow className={classes.row} key={data.deviceid}>
-                <TableCell className={classes.cell} align="right"><DeviceName data={data.device.name}  data2={data.device.deviceid} /> </TableCell>
-                <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
-                <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-                <TableCell className={classes.cell} align="right"> <SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
-                            handleToggle={(e) => {e.preventDefault(); 
-                            socket.emit('change-switch-value',{id1: data.device.deviceid,isOn: !data.isOn})
-                            }}/></TableCell> 
-              </TableRow>
-            
-          
-				                    
-                            
-                
+				<TableRow className={classes.row} key={data.deviceid}>
+				<TableCell className={classes.cell} align="right"><DeviceName data={data.device.name}  data2={data.device.deviceid} /> </TableCell>
+				<TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
+				<TableCell className={classes.cell} align="right"> <SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
+				handleToggle={(e) => {e.preventDefault(); 
+				socket.emit('change-switch-value',{id1: data.device.deviceid,isOn: !data.isOn})
+				}}/></TableCell> 
+				</TableRow> 
             ))}
-           <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
-            </TableRow>
             {data.thermometersbyroom.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right"> <DeviceName data={data.device.name}  data2={data.device.deviceid} />
               </TableCell>
-              <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
               <TableCell className={classes.cell} align="right"> {data.value}</TableCell>
             </TableRow>
-
-
             ))}
-            <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
-            </TableRow> 
-             {data.fridgesbyroom.map(data => (
+            {data.fridgesbyroom.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right">
               <DeviceName data={data.device.name}  data2={data.device.deviceid} />
               </TableCell>
-              <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
               <TableCell className={classes.cell} align="right">
                 <button onClick={() => {

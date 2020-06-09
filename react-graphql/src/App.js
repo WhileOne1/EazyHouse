@@ -3,6 +3,7 @@ import './App.css';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import thermometer from './views/devices/thermometer';
 import switch1 from './views/devices/switch';
+import switch2 from './views/devices/switch1';
 import fridge from './views/devices/fridge';
 import  {Header} from "./components/header";
 import home from './views/home/home';
@@ -21,7 +22,8 @@ export default class App extends Component {
             <Header />
             <Switch>
                 <Route path="/devices/thermometer" component={thermometer} />
-                <Route path="/devices/switch" component={switch1} />
+				<Route path="/devices/switch" component={switch1} />
+                <Route path="/devices/switch1" component={switch2} />
                 <Route path="/devices/fridge" component={fridge} />
                 <Route path="/devices/swiatlo" component={swiatlo} />
                 <Route path="/devices" component={device} />

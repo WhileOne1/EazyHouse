@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
-import SwitchComponent from '../../components/switchComponent';
-const val = 3547589
+import Thermometer from 'react-thermometer-component'
+import SwitchComponent from '../../components/switchComponent'
+const val = 14251
 const deviceid = parseInt(val)
 const type = 'switch'
 
@@ -43,7 +44,7 @@ const MainSwitch = () => {
             messageContainer.append(messageElement)
         }
 
-      },[]);
+      }, []);
       useEffect(() => {
         socket.emit('send-switch-value', {deviceid, value})
   

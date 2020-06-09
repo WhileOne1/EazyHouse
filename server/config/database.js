@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-module.exports = new Sequelize('EazyHouse', 'postgres', 'JUWvMc~y[wX<2.9J', {
+module.exports = new Sequelize('EazyHouse', 'postgres', 'admin1', {
     host: '127.0.0.1',
     dialect:  'postgres',
     pool: {

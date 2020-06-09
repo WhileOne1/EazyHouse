@@ -24,7 +24,7 @@ FridgeModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 UserModel.hasMany(DeviceModel); 
 DeviceModel.belongsTo(UserModel)
 const SECRET = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1';
- sequelize.sync( {force: true} );
+ sequelize.sync(  ); //{force: true}
 sequelize.authenticate()
     .then(() => console.log('db connected'))
     .catch(err => console.log(err)) 
@@ -204,7 +204,7 @@ io.on('connection', socket => {
               {
                 DeviceModel.create({
                 
-                  name, 
+                  name:'termometr', 
                   status,
                   room,
                   deviceid
@@ -231,7 +231,7 @@ io.on('connection', socket => {
               {
                 DeviceModel.create({
                 
-                  name, 
+                  name:'lodówka', 
                   status,
                   room,
                   deviceid
