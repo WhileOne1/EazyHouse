@@ -1,55 +1,72 @@
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-     interface Devices {
-        id: ID!
+     type Device {
+         id: ID!
+        deviceid: Int!
         name: String!
         room: String!
+        status: Boolean!
      }
-      type light {
+      type User {
       id: ID!
-      name: String!
-      isActive: Boolean!
-      isOn: Boolean!
+      username: String!
+      email: Boolean!
+      deviceid: Int!
       }
-      type switch implements Devices  {
+      type switch   {
          id: ID!
-         name: String! 
-         status: Boolean!
          isOn: Boolean!
-         room: String!
+         deviceid: Int!
+         device: Device
          }
-      type thermometer implements Devices {
+      type thermometer  {
          id: ID!
-         name: String!
          value: Int!
-         room: String!
-         status: Boolean!
+         deviceid: Int!
+         device: Device
       }
-      type fridge implements Devices {
+      type fridge  {
          id: ID!
-         name: String!
          value: Int!
-         room: String!
-         status: Boolean!
+         deviceid: Int!
+         device: Device
       }
      type Query {
-        devices: [Devices!]!,
-        lights: [light!]!,
+        devices: [Device!]!,
+        devicesbyroom(room: String! ): [Device!]!,
         thermometers: [thermometer!]!,
         switches: [switch!]!,
         fridges: [fridge!]!,
+        thermometersbyroom(room: String! ): [thermometer!]!,
+        switchesbyroom(room: String! ): [switch!]!,
+        fridgesbyroom(room: String! ): [fridge!]!,
+        distinctRoom: [Device!]!,
 
         
      }
      type Mutation {
-        
-        createSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String): switch,
-        editSwitch(id: ID,name: String): switch,
-        editThermometer(id: ID,name: String): thermometer,
-        editFridge(id: ID,name: String): fridge,
-        deleteSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String): switch,
+         createDevice(deviceid: Int!): Device,
+         editDevice(deviceid: Int!,name: String!): Device,
+         editDeviceRoom(deviceid: Int!,room: String!): Device,
+
+         register(username: String!, email: String!, password: String!): User!
+         login(email: String!, password: String!): String!
      }
 `;
 
 module.exports = typeDefs;
+/* createSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String,deviceid: Int!): switch,
+createThermometer(id: ID,name: String,status: Boolean,value: Int!,room: String,deviceid: Int!): thermometer,
+
+editSwitch(deviceid: Int!,name: String!): switch,
+editThermometer(deviceid: Int!,name: String!): thermometer,
+editFridge(deviceid: Int!,name: String!): fridge,
+
+editSwitchRoom(deviceid: Int!,room: String!): switch,
+editThermometerRoom(deviceid: Int!,room: String!): thermometer,
+editFridgeRoom(deviceid: Int!,room: String!): fridge,
+
+deleteSwitch(id: ID!,name: String,status: Boolean!,isOn: Boolean!,room: String): switch,
+register(username: String!, email: String!, password: String!): User!
+login(email: String!, password: String!): String! */

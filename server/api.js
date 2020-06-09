@@ -13,15 +13,6 @@ const api = {
 
         },
     ],
-    light: [
-        {	
-            id: 20,	
-            name: 'światło 1',	
-            isActive: false	,
-            isOn: true,
-        },
-        
-    ],
     thermometer: [
         {	
             id: 1,

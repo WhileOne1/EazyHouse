@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
 const val = 7
-const id = parseInt(val)
+const deviceid = parseInt(val)
 const type = 'fridge'
 
 
@@ -15,18 +15,18 @@ const MainFridge = () => {
         const messageContainer = document.getElementById('message-container')
 
         
-        socket.emit('check-id', {id,type})
+        socket.emit('check-id', {deviceid})
 
-        socket.on('new-id', id => {
-            socket.emit('add-fridge', { id, value })
+        socket.on('new-id', deviceid => {
+            socket.emit('add-device', { deviceid,type })
         })
 
-        socket.on('old-id', id => {
+        socket.on('old-id', deviceid => {
             
-            socket.emit('old-fridge',  id )
+            socket.emit('old-device',  deviceid )
             appendMessage(`Urządzenie zostało podłączone`)
         })
-        socket.emit('send-fridge-value', {id, value})
+        setTimeout(()=> {socket.emit('send-fridge-value', {deviceid, value})},1000 );
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
@@ -35,8 +35,9 @@ const MainFridge = () => {
         }
         socket.on('fridge-value', ( {id1, value} ) => {
             socket.emit('test')
-            if(id1 == id && value < 9 && value > 3)
+            if(id1 == deviceid && value < 9 && value > 3)
             {
+                socket.emit('test')
                setValue(value)
             }
 
@@ -44,7 +45,7 @@ const MainFridge = () => {
 
       }, []);
       useEffect(() => {
-        socket.emit('send-fridge-value', {id, value})
+        socket.emit('send-fridge-value', {deviceid, value})
   
       },[value])
       

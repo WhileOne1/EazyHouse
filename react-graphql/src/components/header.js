@@ -23,6 +23,9 @@ class Header extends Component  {
             <li>
               <NavLink style={navStyle} to="/devices">Urządzenia </NavLink>
             </li  >
+            <li>
+              <NavLink style={navStyle} to="/rooms">Pokoje </NavLink>
+            </li  >
           </ul>
         </nav>
       </header>

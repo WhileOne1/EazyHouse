@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Query, Mutation } from 'react-apollo'
+import { Query,useQuery, Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import SwitchComponent from '../../components/switchComponent'
-//cimport RoomChoice from '../../components/roomChoice'
 import Indicator from '../../components/statusIndicator'
 import {socket} from '../../components/header'
 import Table from '@material-ui/core/Table';
@@ -26,7 +25,8 @@ const useStyles = makeStyles({
   cell: {
     border: '1px solid',
     width: '20%',
-    textAlign: 'center'
+    textAlign: 'center',
+    backgroundColor: '#cbf5d8',
 
   },
   cellMain: {
@@ -44,43 +44,28 @@ const useStyles = makeStyles({
     maxWidth: '100%'
   },
   button: {
-    background: 'lightblue',
+    background: 'lightgray',
     borderRadius: '2px',
     color: 'black',
+  },
+  select:{
+    position: 'relative',
+    fontFamily: 'Arial',
+    minWidth: '150px',
+    maxWidth: '20%',
+    fontWeight: 'bold',
+    fontSize: '20px',
+    margin: 'auto',
+    backgroundColor: "lightgray",
+        margin: "10px",
+    "&:selected ": {
+      backgroundColor: "green"
+    }
+  },
+  div: {
+    textAlign: 'center',
   }
 });
- const GET_SWITCHES = gql` {
-  switches{
-    isOn
-  device {
-      name
-      status
-      room
-      deviceid
-    }
-  }
-  thermometers{
-    value
-  device {
-      name
-      status
-      room
-      deviceid
-    }
-  }
-  fridges{
-    value
-  device {
-      name
-      status
-      room
-      deviceid
-    }
-  }
-  
-
-
-  }` ;
  const POST_DEVICE = gql`
 mutation editDevice($deviceid: Int!, $name: String!) {
   editDevice(deviceid: $deviceid,name: $name) {
@@ -95,18 +80,78 @@ mutation editDeviceRoom($deviceid: Int!, $room: String!) {
   }
 }
 `; 
-const Home = () => {
+const GET_SWITCHES_ROOM = gql`
+
+  query ($room: String!){
+    switchesbyroom(room: $room) {
+      isOn
+      deviceid
+      device{
+      name
+      room
+      status
+      deviceid
+      }
+    }
+    thermometersbyroom(room: $room) {
+      value
+      deviceid
+      device{
+      name
+      room
+      status
+      deviceid
+      }
+    }
+    fridgesbyroom(room: $room) {
+      value
+      deviceid
+      device{
+      name
+      room
+      status
+      deviceid
+      }
+    }
+    distinctRoom{
+      room
+    }
+
+  }
+  
+  
+
+
+  ` ;
+const handleChange = (event) => {
+  this.setState({ value: event.target.value });
+};
+const Rooms = () => {
+  const [room, setRoom] = useState("aaa");
   const classes = useStyles();
 return (
-<Query query={GET_SWITCHES} pollInterval={500}>
+<Query query={GET_SWITCHES_ROOM} variables={  {room} } pollInterval={500}>
     {({ loading, error, data }) => {
       if (loading) return 'Loading...';
       if (error) return `Error! ${error.message}`;
-      let input;
+      let input
+
 
       return (
         <div>
-           <TableContainer component={Paper}>
+<div className={classes.div}>
+        {<select className={classes.select} value= {room} onChange={(e) => setRoom(e.target.value)} >
+          {data.distinctRoom.map(device => (
+            <option  value={device.room}>
+              {device.room}
+            </option>
+
+          ))}
+        </select>
+}
+</div>
+  
+            <TableContainer component={Paper}>
         <Table className={classes.table} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
@@ -117,19 +162,19 @@ return (
             </TableRow>
           </TableHead>
           <TableBody>
-            {(data.switches).map(data => (
+            {(data.switchesbyroom).map(data => (
                 
 
               <TableRow className={classes.row} key={data.deviceid}>
                 <TableCell className={classes.cell} align="right"><Popup trigger={<button className={classes.button}> {data.device.name}</button>} position="right center">
             <div> <Mutation mutation={POST_DEVICE} >
-                                        {(editSwitch, {data}) => (
+                                        {(editSwitch, {data2}) => (
                                           <div>
                                             
                                             <form
                                               onSubmit={e => {
                                                 e.preventDefault();
-                                                editSwitch({ variables: { deviceid: data.deviceid, name: input.value } });
+                                                editSwitch({ variables: { deviceid: data.device.deviceid, name: input.value } });
                             
                                                 input.value = "";
                                               }}
@@ -145,30 +190,7 @@ return (
                                         )}
                                       </Mutation> </div>
   </Popup> </TableCell>
-                 <TableCell className={classes.cell} align="right"><Popup trigger={<button className={classes.button}> {data.device.room}</button>} position="right center">
-            <div> <Mutation mutation={POST_DEVICE_ROOM} >
-                                        {(editSwitch, {data2}) => (
-                                          <div>
-                                            
-                                            <form
-                                              onSubmit={e => {
-                                                e.preventDefault();
-                                                editSwitch({ variables: { deviceid: data.device.deviceid, room: input.value } });
-                            
-                                                input.value = "";
-                                              }}
-                                            >
-                                              <input type="text" minlength="3"
-                                                ref={node => {
-                                                  input = node;
-                                                }}
-                                              />
-                                              <button type="submit">Zmień nazwę</button>
-                                            </form> 
-                                          </div>
-                                        )}
-                                      </Mutation> </div>
-  </Popup></TableCell>
+                <TableCell className={classes.cell} align="right">{data.device.room}</TableCell>
                 <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
                 <TableCell className={classes.cell} align="right"> <SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
                             handleToggle={(e) => {e.preventDefault(); 
@@ -187,7 +209,7 @@ return (
               <TableCell className={classes.cellMain} align="right"> status</TableCell>
               <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
             </TableRow>
-            {data.thermometers.map(data => (
+            {data.thermometersbyroom.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right"> 
               <Popup trigger={<button className={classes.button}> {data.device.name}</button>} position="right center">
@@ -228,7 +250,7 @@ return (
               <TableCell className={classes.cellMain} align="right"> status</TableCell>
               <TableCell className={classes.cellMain} align="right"> temperatura</TableCell>
             </TableRow> 
-             {data.fridges.map(data => (
+             {data.fridgesbyroom.map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right">
               <Popup trigger={<button className={classes.button}> {data.device.name}</button>} position="right center">
@@ -280,7 +302,7 @@ return (
 
             </TableBody>
         </Table>
-      </TableContainer>              
+      </TableContainer>            
         </div>
                           
       );
@@ -296,26 +318,4 @@ return (
 
 
 
-export default Home;
-                                {/* <Mutation mutation={POST_THERMOMETERS} >
-                                {(editThermometer, {data}) => (
-                                  <div>
-                                    
-                                    <form
-                                      onSubmit={e => {
-                                        e.preventDefault();
-                                        editThermometer({ variables: { id: device.id, name: input.value } });
-                    
-                                        input.value = "";
-                                      }}
-                                    >
-                                      <input type="text"
-                                        ref={node => {
-                                          input = node;
-                                        }}
-                                      />
-                                      <button type="submit">Zmień nazwę</button>
-                                    </form> 
-                                  </div>
-                                )}
-                              </Mutation> */}
+export default Rooms;
