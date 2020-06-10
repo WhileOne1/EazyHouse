@@ -4,6 +4,7 @@ import {observer} from 'mobx-react';
 import { Button, Input, Container } from '@material-ui/core';
 import gql from 'graphql-tag'
 import { graphql } from 'react-apollo';
+import { useAuth} from '../../context/auth'
 const loginMutation = gql`
 mutation($email: String!, $password: String!){
     login( email:$email,password:$password){
@@ -28,6 +29,7 @@ class Login extends React.Component {
           errors: {},
         });
       }
+      
     
       onSubmit = async () => {
         const { email, password } = this;
@@ -40,11 +42,11 @@ class Login extends React.Component {
         const {
           ok, token, refreshToken, errors,
         } = response.data.login;
-    
         if (ok) {
           localStorage.setItem('token', token);
           localStorage.setItem('refreshToken', refreshToken);
           this.props.history.push('/');
+          window.location.reload();
         } else {
           const err = {};
           errors.forEach(({ path, message }) => {
@@ -86,6 +88,7 @@ class Login extends React.Component {
               fluid
             />
             <Button onClick={this.onSubmit}>Submit</Button>
+         
           </Container>
         );
       }

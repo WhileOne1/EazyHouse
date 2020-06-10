@@ -14,7 +14,7 @@ const SwitchModel = require('./server/newmodels/Switch');
 const FridgeModel = require('./server/newmodels/Fridge');
 const UserModel = require('./server/newmodels/User');
 const DeviceModel = require('./server/newmodels/Device');
-//const Auth =  require('./server/auth/auth');
+
 SwitchModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 ThermometerModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 FridgeModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
@@ -24,9 +24,13 @@ DeviceModel.belongsTo(UserModel)
 const SECRET = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1';
 const SECRET2 = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1dsgdfgsdfds';
 
+const createAdmin = async (UserModel) => {
+  const hashedPassword = await bcrypt.hash('admin',12);
+  UserModel.create({email:'admin@example.com',username:'admin',password: hashedPassword});
+}
 sequelize.sync( {force: true} );
 sequelize.authenticate()
-    .then(() => console.log('db connected'))
+    .then(() => {{console.log('db connected'), createAdmin(UserModel)}})
     .catch(err => console.log(err)) 
 sequelize.sequelize = sequelize;
 sequelize.Sequelize = Sequelize;
@@ -159,7 +163,7 @@ const resolvers = {
             }]
           }
         }
-        if(password.length < 6 || username.length > 100){
+        if(password.length < 5 || username.length > 100){
           return {
             ok: false,
             errors:[{

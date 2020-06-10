@@ -12,7 +12,7 @@ const User = sequelize.define('user', {
     password: {
         type: Sequelize.STRING,
         validate:{
-            len: {args:[8,100], msg: 'The password needs to be between 8 and 100 characters long'},
+            len: {args:[5,100], msg: 'The password needs to be between 8 and 100 characters long'},
         }
     },
     email: {

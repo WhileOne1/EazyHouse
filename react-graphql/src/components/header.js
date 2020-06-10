@@ -12,6 +12,25 @@ class Header extends Component  {
     
     render()
     {
+      if (localStorage.getItem("token") === null) return (
+      <header className="Header">
+      <nav className="Nav">
+        <h1>EazyHouse</h1>
+        <ul className="Nav-Links">
+          <li>
+            <NavLink style={navStyle} to="/">Strona Główna </NavLink>
+          </li>
+          <li>
+            <NavLink style={navStyle} to="/rooms">Pokoje </NavLink>
+          </li  >
+          <li>
+            <NavLink style={navStyle} to="/devices">Urządzenia </NavLink>
+          </li  >
+          </ul>
+
+        </nav >
+        </header>
+          );
         return (
       
         <header className="Header">
@@ -27,15 +46,12 @@ class Header extends Component  {
             <li>
               <NavLink style={navStyle} to="/devices">Urządzenia </NavLink>
             </li  >
-
-
-
-{/*           <li className="Log-Links">
-              <NavLink style={navStyle} to="/login">Logowanie </NavLink>
-              </li  >
-              <li >
-              <NavLink style={navStyle} to="/register">Rejestracja </NavLink>
-            </li  > */}
+            <li>
+              <NavLink style={navStyle} to="/register">Dodaj Użytkowników </NavLink>
+            </li  >
+            <li>
+            <button onClick={function(){localStorage.clear(); window.location.reload();}}>wyloguj</button>
+            </li>
             </ul>
 
         </nav >
