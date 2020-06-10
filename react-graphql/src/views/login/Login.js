@@ -4,7 +4,7 @@ import {observer} from 'mobx-react';
 import { Button, Input, Container } from '@material-ui/core';
 import gql from 'graphql-tag'
 import { graphql } from 'react-apollo';
-import { useAuth} from '../../context/auth'
+
 const loginMutation = gql`
 mutation($email: String!, $password: String!){
     login( email:$email,password:$password){
@@ -20,6 +20,7 @@ mutation($email: String!, $password: String!){
 `;
 
 class Login extends React.Component {
+  
     constructor(props) {
         super(props);
     
@@ -77,8 +78,8 @@ class Login extends React.Component {
         return (
           <Container text>
             <h2>Login</h2>
-            <Input name="email" error={emailError} onChange={this.onChange} value={email} placeholder="Email" fluid />
-            <Input
+            <Input label="Filled" name="email" error={emailError} onChange={this.onChange} value={email} placeholder="Email" fluid />
+            <Input label="Filled"
                 error={passwordError}
               name="password"
               onChange={this.onChange}

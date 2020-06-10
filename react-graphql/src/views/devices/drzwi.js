@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
 import SwitchComponent from '../../components/switchComponent'
-const val = 6
-const id = parseInt(val)
-const type = 'Gate'
+const val = 342435
+const deviceid = parseInt(val)
+const type = 'switch'
 
 
 
-const MainGate = () => {
+const MainSwitch = () => {
     const [value, setValue] = useState(false);
     const socket = socketIOClient('http://localhost:2000')
 
@@ -16,25 +16,26 @@ const MainGate = () => {
         const messageContainer = document.getElementById('message-container')
 
         
-        socket.emit('check-id', {id,type})
+        socket.emit('check-id', {deviceid})
 
-        socket.on('new-id', id => {
-            socket.emit('add-switch', { id, value })
+        socket.on('new-id', deviceid => {
+            socket.emit('add-device', { deviceid,type })
+            appendMessage(`Urządzenie zostało dodane`)
         })
 
-        socket.on('old-id', id => {
+        socket.on('old-id', deviceid => {
             
-            socket.emit('old-switch',  id )
+            socket.emit('old-device',  deviceid )
             appendMessage(`Urządzenie zostało podłączone`)
         })
         socket.on('value', ( {id1, isOn} ) => {
-            if(id1 == id)
+            if(id1 == deviceid)
             {
               setValue(isOn)
             }
 
         })
-        socket.emit('send-switch-value', {id, value})
+        socket.emit('send-switch-value', {deviceid, value})
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
@@ -44,7 +45,7 @@ const MainGate = () => {
 
       }, []);
       useEffect(() => {
-        socket.emit('send-switch-value', {id, value})
+        socket.emit('send-switch-value', {deviceid, value})
   
       },[value])
       
@@ -61,7 +62,7 @@ const MainGate = () => {
     return (
         <div >
             <div style={thermostyle}>
-            <SwitchComponent  isItOn={value} switchid={id}
+            <SwitchComponent  isItOn={value} switchid={deviceid}
              handleToggle={() => setValue(!value)}/>
              {value}
             </div>

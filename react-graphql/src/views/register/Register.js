@@ -4,7 +4,8 @@ import { graphql } from 'react-apollo';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
-import Message from '@material-ui/core/Snackbar'
+import Message from '@material-ui/core/Snackbar';
+import InputLabel from '@material-ui/core/InputLabel';
 const registerMutation = gql`
   mutation register($username: String!, $email: String!, $password: String!) {
     register(username: $username, email: $email, password: $password)
@@ -81,7 +82,7 @@ class Register extends React.Component {
     return (
       <Container text>
           <h2>Register</h2>
-        <Input
+        <Input label="Filled"
           error={!!usernameError}
           name="username"
           onChange={onChange}
@@ -89,15 +90,15 @@ class Register extends React.Component {
           placeholder="Username"
           fluid
         />
-        <Input  error={!!emailError} name="email" onChange={onChange} value={email} placeholder="Email" fluid />
-        <Input
+        <Input label="Filled" error={!!emailError} name="email" onChange={onChange} value={email} placeholder="Email" fluid />
+        <Input label="Filled"
           error={!!passwordError}
           name="password"
           onChange={onChange}
           value={password}
           type="password"
           placeholder="Password"
-          fluid
+          
         />
         <Button onClick={(username && email && password) ? onSubmit : null }>Submit</Button>
         {usernameError || emailError || passwordError ? (

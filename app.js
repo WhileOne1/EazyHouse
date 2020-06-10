@@ -28,7 +28,7 @@ const createAdmin = async (UserModel) => {
   const hashedPassword = await bcrypt.hash('admin',12);
   UserModel.create({email:'admin@example.com',username:'admin',password: hashedPassword});
 }
-sequelize.sync( {force: true} );
+sequelize.sync(  );
 sequelize.authenticate()
     .then(() => {{console.log('db connected'), createAdmin(UserModel)}})
     .catch(err => console.log(err)) 
@@ -321,6 +321,23 @@ io.on('connection', socket => {
                   FridgeModel.create(
                     {deviceid}
                   )})
+              }
+              if(type == 'multidevice')
+              {
+                DeviceModel.create({
+                
+                  name, 
+                  status,
+                  room,
+                  deviceid
+                }).then(() =>{
+                  SwitchModel.create(
+                    {deviceid}
+                  )
+                  ThermometerModel.create(
+                    {deviceid}
+                  )
+                })
               }
             
     })

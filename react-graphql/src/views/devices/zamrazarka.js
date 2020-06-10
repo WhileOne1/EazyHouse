@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
-import SwitchComponent from '../../components/switchComponent'
-const val = 3347588
+const val = 234143234
 const deviceid = parseInt(val)
-const type = 'switch'
+const type = 'fridge'
 
 
 
-const MainSwitch = () => {
-    const [value, setValue] = useState(false);
+const MainFridge = () => {
+    const [value, setValue] = useState(-16);
     const socket = socketIOClient('http://localhost:2000')
 
     useEffect(() => {
@@ -20,7 +19,6 @@ const MainSwitch = () => {
 
         socket.on('new-id', deviceid => {
             socket.emit('add-device', { deviceid,type })
-            appendMessage(`Urządzenie zostało dodane`)
         })
 
         socket.on('old-id', deviceid => {
@@ -28,25 +26,26 @@ const MainSwitch = () => {
             socket.emit('old-device',  deviceid )
             appendMessage(`Urządzenie zostało podłączone`)
         })
-        socket.on('value', ( {id1, isOn} ) => {
-          socket.emit('test')
-            if(id1 == deviceid)
-            {
-              setValue(isOn)
-            }
-
-        })
-        socket.emit('send-switch-value', {deviceid, value})
+        setTimeout(()=> {socket.emit('send-fridge-value', {deviceid, value})},1000 );
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
             messageElement.innerText = message
             messageContainer.append(messageElement)
         }
+        socket.on('fridge-value', ( {id1, value} ) => {
+            socket.emit('test')
+            if(id1 == deviceid && value < -15 && value > -21)
+            {
+                socket.emit('test')
+               setValue(value)
+            }
+
+        })
 
       }, []);
       useEffect(() => {
-        socket.emit('send-switch-value', {deviceid, value})
+        socket.emit('send-fridge-value', {deviceid, value})
   
       },[value])
       
@@ -63,12 +62,27 @@ const MainSwitch = () => {
     return (
         <div >
             <div style={thermostyle}>
-            <SwitchComponent  isItOn={value} switchid={deviceid}
-             handleToggle={() => setValue(!value)}/>
-             {value}
+           <Thermometer
+            theme="light"
+            value={value}
+            max="-20"
+            steps="3"
+            format="°C"
+            size="large"
+            height="300"
+            /> 
             </div>
             <div style={thermostyle}>
-
+            <button onClick={() => {if(value<=7){
+                setValue(value + 1)
+            }}}>
+            zwiększ temperaturę
+            </button>
+            <button onClick={() =>{if(value>=5){
+                setValue(value - 1)
+            }}}>
+            zmiejsz temperaturę
+            </button>
             </div>
 
         
@@ -77,4 +91,4 @@ const MainSwitch = () => {
         </div>
     )
 };
-export default MainSwitch;
+export default MainFridge;

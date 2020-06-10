@@ -28,7 +28,6 @@ const useStyles = makeStyles({
     border: '1px solid',
     width: '20%',
     textAlign: 'center',
-    backgroundColor: '#cbf5d8',
 
   },
   cellMain: {
@@ -115,7 +114,7 @@ const handleChange = (event) => {
   this.setState({ value: event.target.value });
 };
 const Rooms = () => {
-  const [room, setRoom] = useState("nie przypisano");
+  const [room, setRoom] = useState("wybierz pokój");
   const classes = useStyles();
 return (
 <Query query={GET_SWITCHES_ROOM} variables={  {room} } pollInterval={500}>
@@ -129,6 +128,9 @@ return (
         <div>
 <div className={classes.div}>
         {<select className={classes.select} value= {room} onChange={(e) => setRoom(e.target.value)} >
+        <option  value="wybierz pokój">
+        wybierz pokój
+            </option>
           {data.distinctRoom.map(device => (
             <option  value={device.room}>
               {device.room}
@@ -174,7 +176,7 @@ return (
               </TableCell>
               <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-              <TableCell className={classes.cell} align="right"> {data.value}</TableCell>
+              <TableCell className={classes.cell} align="right"> <h2>{data.value}&#8451;</h2></TableCell>
             </TableRow>
 
 
@@ -193,7 +195,7 @@ return (
                 +
                   </button>
 
-                     <h2>{data.value}*C</h2> 
+                     <h2>{data.value}&#8451;</h2> 
 
                 <button onClick={() =>{
                      socket.emit('change-fridge-value',{id1: data.device.deviceid,value: data.value -1})

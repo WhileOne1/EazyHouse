@@ -39,7 +39,7 @@ const SwitchName = ({data,data2}) => {
                                                 input.value = "";
                                               }}
                                             >
-                                              <input type="text" minlength="3"
+                                              <input type="text" minLength="3"
                                                 ref={node => {
                                                   input = node;
                                                 }}

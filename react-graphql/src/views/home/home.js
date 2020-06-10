@@ -22,6 +22,13 @@ const useStyles = makeStyles({
     maxWidth: '90%',
     margin: 'auto',
     backgroundColor: 'silver',
+    opacity: '1',
+
+  },
+  containerTable: {
+    minWidth: '650px',
+    maxWidth: '100%',
+    margin: 'auto',
 
   },
   cell: {
@@ -96,7 +103,7 @@ return (
 
       return (
         <div>
-           <TableContainer component={Paper}>
+          <TableContainer className={classes.containerTable} component={Paper}>
         <Table className={classes.table} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
@@ -111,11 +118,11 @@ return (
             {(data.switches).map(data => (
                 
 
-              <TableRow className={classes.row} key={data.deviceid}>
-                <TableCell className={classes.cell} align="right"> <DeviceName data={data.device.name}  data2={data.device.deviceid} /></TableCell>
-                 <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
-                <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-                <TableCell className={classes.cell} align="right"> <div className={classes.div}><SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
+              <TableRow className={classes.row} key={data.device.deviceid}>
+                <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <DeviceName data={data.device.name}  data2={data.device.deviceid} /></TableCell>
+                 <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
+                <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
+                <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <div className={classes.div}><SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
                             handleToggle={(e) => {e.preventDefault(); 
                             socket.emit('change-switch-value',{id1: data.device.deviceid,isOn: !data.isOn})
                             }}/></div></TableCell> 
@@ -132,7 +139,7 @@ return (
               </TableCell>
               <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-              <TableCell className={classes.cell} align="right"> <h2>{data.value}</h2></TableCell>
+              <TableCell className={classes.cell} align="right"> <h2>{data.value}&#8451;</h2></TableCell>
               <TableCell className={classes.cell} align="right"> <DeleteDevice deviceID={data.device.deviceid}/></TableCell>
             </TableRow>
 
@@ -150,7 +157,7 @@ return (
                 +
                   </button>
 
-                     <h2>{data.value}*C</h2> 
+                     <h2>{data.value}&#8451;</h2> 
 
                 <button onClick={() =>{
                      socket.emit('change-fridge-value',{id1: data.device.deviceid,value: data.value -1})
@@ -183,25 +190,3 @@ return (
 
 
 export default Home;
-                                {/* <Mutation mutation={POST_THERMOMETERS} >
-                                {(editThermometer, {data}) => (
-                                  <div>
-                                    
-                                    <form
-                                      onSubmit={e => {
-                                        e.preventDefault();
-                                        editThermometer({ variables: { id: device.id, name: input.value } });
-                    
-                                        input.value = "";
-                                      }}
-                                    >
-                                      <input type="text"
-                                        ref={node => {
-                                          input = node;
-                                        }}
-                                      />
-                                      <button type="submit">Zmień nazwę</button>
-                                    </form> 
-                                  </div>
-                                )}
-                              </Mutation> */}
