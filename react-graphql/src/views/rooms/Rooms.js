@@ -28,6 +28,10 @@ const useStyles = makeStyles({
     border: '1px solid',
     width: '20%',
     textAlign: 'center',
+    '&:hover': {
+      backgroundColor: '#b0b0b0',
+ 
+    }
 
   },
   cellMain: {
@@ -82,6 +86,7 @@ const GET_SWITCHES_ROOM = gql`
     }
     thermometersbyroom(room: $room) {
       value
+      valueType
       deviceid
       device{
       name
@@ -91,6 +96,7 @@ const GET_SWITCHES_ROOM = gql`
       }
     }
     fridgesbyroom(room: $room) {
+      valueType
       value
       deviceid
       device{
@@ -152,7 +158,7 @@ return (
             </TableRow>
           </TableHead>
           <TableBody>
-            {(data.switchesbyroom).map(data => (
+            {(data.switchesbyroom).sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
                 
 
               <TableRow className={classes.row} key={data.deviceid}>
@@ -170,18 +176,18 @@ return (
                             
                 
             ))}
-            {data.thermometersbyroom.map(data => (
+            {data.thermometersbyroom.sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right"> <DeviceName data={data.device.name}  data2={data.device.deviceid} />
               </TableCell>
               <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-              <TableCell className={classes.cell} align="right"> <h2>{data.value}&#8451;</h2></TableCell>
+            <TableCell className={classes.cell} align="right"> <h2>{data.value} {data.valueType}</h2></TableCell>
             </TableRow>
 
 
             ))}
-             {data.fridgesbyroom.map(data => (
+             {data.fridgesbyroom.sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right">
               <DeviceName data={data.device.name}  data2={data.device.deviceid} />
@@ -195,7 +201,7 @@ return (
                 +
                   </button>
 
-                     <h2>{data.value}&#8451;</h2> 
+                     <h2>{data.value} {data.valueType}</h2> 
 
                 <button onClick={() =>{
                      socket.emit('change-fridge-value',{id1: data.device.deviceid,value: data.value -1})

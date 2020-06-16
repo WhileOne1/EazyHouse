@@ -9,7 +9,7 @@ import Thermometer from 'react-thermometer-component'
 const val = 2232
 const deviceid = parseInt(val)
 const type = 'thermometer'
-
+const valueType = '°C'
 
 
 const MainThermometer = () => {
@@ -34,7 +34,7 @@ const MainThermometer = () => {
             socket.emit('old-device',  deviceid )
             appendMessage(`Urządzenie zostało podłączone`)
         })
-        setTimeout(() => { socket.emit('send-thermometer-value', {deviceid, value}) }, 1000);
+        setTimeout(() => { socket.emit('send-thermometer-value', {deviceid, value,valueType}) }, 1000);
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
@@ -44,7 +44,7 @@ const MainThermometer = () => {
 
       }, []);
       useEffect(() => {
-        socket.emit('send-thermometer-value', {deviceid, value})
+        socket.emit('send-thermometer-value', {deviceid, value,valueType})
   
       },[value])
       

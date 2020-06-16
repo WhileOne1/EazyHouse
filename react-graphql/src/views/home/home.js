@@ -34,7 +34,11 @@ const useStyles = makeStyles({
   cell: {
     border: '1px solid',
     width: '20%',
-    textAlign: 'center'
+    textAlign: 'center',
+    '&:hover': {
+      backgroundColor: '#b0b0b0',
+ 
+    }
 
   },
   cellMain: {
@@ -73,6 +77,7 @@ const useStyles = makeStyles({
   }
   thermometers{
     value
+    valueType
   device {
       name
       status
@@ -82,6 +87,18 @@ const useStyles = makeStyles({
   }
   fridges{
     value
+    valueType
+  device {
+      name
+      status
+      room
+      deviceid
+    }
+  }
+  switchesWithValues{
+    value
+    valueType
+    isOn
   device {
       name
       status
@@ -115,49 +132,49 @@ return (
             </TableRow>
           </TableHead>
           <TableBody>
-            {(data.switches).map(data => (
+            {(data.switches).sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
                 
 
               <TableRow className={classes.row} key={data.device.deviceid}>
-                <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <DeviceName data={data.device.name}  data2={data.device.deviceid} /></TableCell>
-                 <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
+                <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <DeviceName key={data.device.deviceid} data={data.device.name}  data2={data.device.deviceid} /></TableCell>
+                 <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceRoom key={data.device.deviceid} deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
                 <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
                 <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <div className={classes.div}><SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
                             handleToggle={(e) => {e.preventDefault(); 
                             socket.emit('change-switch-value',{id1: data.device.deviceid,isOn: !data.isOn})
                             }}/></div></TableCell> 
-                            <TableCell className={classes.cell} align="right"> <DeleteDevice deviceID={data.device.deviceid}/></TableCell>
+                            <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <DeleteDevice deviceID={data.device.deviceid}/></TableCell>
               </TableRow>
             ))}
            <TableRow>
 
             </TableRow>
-            {data.thermometers.map(data => (
+            {data.thermometers.sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
-              <TableCell className={classes.cell} align="right"> 
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"> 
               <DeviceName data={data.device.name}  data2={data.device.deviceid} />
               </TableCell>
-              <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
-              <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-              <TableCell className={classes.cell} align="right"> <h2>{data.value}&#8451;</h2></TableCell>
-              <TableCell className={classes.cell} align="right"> <DeleteDevice deviceID={data.device.deviceid}/></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceRoom key={data.device.deviceid} deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <h2>{data.value} {data.valueType}</h2></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <DeleteDevice  deviceID={data.device.deviceid}/></TableCell>
             </TableRow>
 
             ))}
 
-             {data.fridges.map(data => (
+             {data.fridges.sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
               <TableRow className={classes.row} key={data.device.deviceid}>
-              <TableCell className={classes.cell} align="right"><DeviceName data={data.device.name}  data2={data.device.deviceid} /></TableCell>
-              <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
-              <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
-              <TableCell className={classes.cell} align="right">
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceName key={data.device.deviceid} data={data.device.name}  data2={data.device.deviceid} /></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceRoom key={data.device.deviceid} deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right">
                 <button onClick={() => {
                 socket.emit('change-fridge-value',{id1: data.device.deviceid,value: data.value + 1})
                }}>
                 +
                   </button>
 
-                     <h2>{data.value}&#8451;</h2> 
+                     <h2 key={data.device.deviceid}>{data.value} {data.valueType}</h2> 
 
                 <button onClick={() =>{
                      socket.emit('change-fridge-value',{id1: data.device.deviceid,value: data.value -1})
@@ -165,7 +182,36 @@ return (
                   -
             </button> 
             </TableCell>
-            <TableCell className={classes.cell} align="right"><DeleteDevice deviceID={data.device.deviceid}/></TableCell>
+            <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeleteDevice deviceID={data.device.deviceid}/></TableCell>
+            </TableRow>
+
+
+            ))}
+            {data.switchesWithValues.sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
+              <TableRow className={classes.row} key={data.device.deviceid}>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceName key={data.device.deviceid} data={data.device.name}  data2={data.device.deviceid} /></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceRoom key={data.device.deviceid} deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right">
+              <div className={classes.div}><SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
+                            handleToggle={(e) => {e.preventDefault(); 
+                            socket.emit('change-switch-value',{id1: data.device.deviceid,isOn: !data.isOn})
+                            }}/></div>
+                <button onClick={() => {
+                socket.emit('change-switchwithvalue-value',{id1: data.device.deviceid,value2: data.value + 1})
+               }}>
+                +
+                  </button>
+
+                     <h2 key={data.device.deviceid}>{data.value} {data.valueType}</h2> 
+
+                <button onClick={() =>{
+                     socket.emit('change-switchwithvalue-value',{id1: data.device.deviceid,value2: data.value -1})
+                    }}>
+                  -
+            </button> 
+            </TableCell>
+            <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeleteDevice deviceID={data.device.deviceid}/></TableCell>
             </TableRow>
 
 

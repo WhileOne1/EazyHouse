@@ -9,6 +9,7 @@ import Thermometer from 'react-thermometer-component'
 const val = 3423453
 const deviceid = parseInt(val)
 const type = 'thermometer'
+const valueType = 'hPa'
 
 
 
@@ -34,7 +35,7 @@ const MainThermometer = () => {
             socket.emit('old-device',  deviceid )
             appendMessage(`Urządzenie zostało podłączone`)
         })
-        setTimeout(() => { socket.emit('send-thermometer-value', {deviceid, value}) }, 1000);
+        setTimeout(() => { socket.emit('send-thermometer-value', {deviceid, value,valueType}) }, 1000);
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
@@ -44,7 +45,7 @@ const MainThermometer = () => {
 
       }, []);
       useEffect(() => {
-        socket.emit('send-thermometer-value', {deviceid, value})
+        socket.emit('send-thermometer-value', {deviceid, value,valueType})
   
       },[value])
       
@@ -64,7 +65,7 @@ const MainThermometer = () => {
            <Thermometer
             theme="light"
             value={value}
-            max="100"
+            max="1200"
             steps="3"
             format="hPa"
             size="large"

@@ -11,5 +11,9 @@ const Thermometer = sequelize.define('thermometer', {
         type: Sequelize.INTEGER,
         defaultValue: 0
     },
+    valueType: {
+        type: Sequelize.STRING,
+        defaultValue: ""
+    },
 })
 module.exports = Thermometer;
