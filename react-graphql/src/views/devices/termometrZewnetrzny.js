@@ -6,7 +6,7 @@ import Thermometer from 'react-thermometer-component'
     const randomNumber = Math.floor((Math.random() * maxNumber) + 1);
     return randomNumber;
   } */
-const val = 325235
+const val = 24324
 const deviceid = parseInt(val)
 const type = 'thermometer'
 

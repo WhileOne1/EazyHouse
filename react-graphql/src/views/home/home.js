@@ -107,11 +107,11 @@ return (
         <Table className={classes.table} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> stan</TableCell>
-              <TableCell className={classes.cellMain} align="right"> usuwanie</TableCell>
+              <TableCell className={classes.cellMain}>Urządenie</TableCell>
+              <TableCell className={classes.cellMain} align="right">Pokój</TableCell>
+              <TableCell className={classes.cellMain} align="right">Status</TableCell>
+              <TableCell className={classes.cellMain} align="right">Stan</TableCell>
+              <TableCell className={classes.cellMain} align="right">Usuwanie</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

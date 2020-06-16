@@ -18,14 +18,14 @@ class Header extends Component  {
         <h1>EazyHouse</h1>
         <ul className="Nav-Links">
           <li>
-            <NavLink style={navStyle} to="/">Strona Główna </NavLink>
+            <NavLink style={navStyle} to="/">Strona Główna</NavLink>
           </li>
           <li>
-            <NavLink style={navStyle} to="/rooms">Pokoje </NavLink>
-          </li  >
+            <NavLink style={navStyle} to="/rooms">Pokoje</NavLink>
+          </li>
           <li>
-            <NavLink style={navStyle} to="/devices">Urządzenia </NavLink>
-          </li  >
+            <NavLink style={navStyle} to="/devices">Urządzenia</NavLink>
+          </li>
           </ul>
 
         </nav >
@@ -38,19 +38,19 @@ class Header extends Component  {
           <h1>EazyHouse</h1>
           <ul className="Nav-Links">
             <li>
-              <NavLink style={navStyle} to="/">Strona Główna </NavLink>
+              <NavLink style={navStyle} to="/">Strona Główna</NavLink>
             </li>
             <li>
-              <NavLink style={navStyle} to="/rooms">Pokoje </NavLink>
-            </li  >
+              <NavLink style={navStyle} to="/rooms">Pokoje</NavLink>
+            </li>
             <li>
-              <NavLink style={navStyle} to="/devices">Urządzenia </NavLink>
-            </li  >
+              <NavLink style={navStyle} to="/devices">Symulator Urządzeń</NavLink>
+            </li>
             <li>
-              <NavLink style={navStyle} to="/register">Dodaj Użytkowników </NavLink>
-            </li  >
+              <NavLink style={navStyle} to="/register">Dodaj Użytkowników</NavLink>
+            </li>
             <li>
-            <button onClick={function(){localStorage.clear(); window.location.reload();}}>wyloguj</button>
+            <button onClick={function(){localStorage.clear(); window.location.reload();}}>Wyloguj</button>
             </li>
             </ul>
 

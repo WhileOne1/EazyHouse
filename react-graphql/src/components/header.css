@@ -1,11 +1,12 @@
 .Header {
     text-align:center;
+	padding-bottom: 50px;
 }
 .Nav {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    min-height: 15vh;
+    min-height: 10vh;
     background: rgb(73,79,82);
     color: white;
 }
@@ -22,4 +23,7 @@
     justify-content: space-around;
     align-items: right;
     list-style: none;
+}
+body{
+	padding-bottom: 50px;
 }

@@ -145,10 +145,9 @@ return (
         <Table className={classes.table} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
-              <TableCell className={classes.cellMain}> Nazwa</TableCell>
-              <TableCell className={classes.cellMain} align="right"> Pokój</TableCell>
-              <TableCell className={classes.cellMain} align="right"> status</TableCell>
-              <TableCell className={classes.cellMain} align="right"> stan</TableCell>
+              <TableCell className={classes.cellMain}>Urządzenie</TableCell>
+              <TableCell className={classes.cellMain} align="right">Status</TableCell>
+              <TableCell className={classes.cellMain} align="right">Stan</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -157,7 +156,6 @@ return (
 
               <TableRow className={classes.row} key={data.deviceid}>
                 <TableCell className={classes.cell} align="right"><DeviceName data={data.device.name}  data2={data.device.deviceid} /> </TableCell>
-                <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
                 <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
                 <TableCell className={classes.cell} align="right"> <SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
                             handleToggle={(e) => {e.preventDefault(); 
@@ -174,7 +172,6 @@ return (
               <TableRow className={classes.row} key={data.device.deviceid}>
               <TableCell className={classes.cell} align="right"> <DeviceName data={data.device.name}  data2={data.device.deviceid} />
               </TableCell>
-              <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
               <TableCell className={classes.cell} align="right"> <h2>{data.value}&#8451;</h2></TableCell>
             </TableRow>
@@ -186,7 +183,6 @@ return (
               <TableCell className={classes.cell} align="right">
               <DeviceName data={data.device.name}  data2={data.device.deviceid} />
               </TableCell>
-              <TableCell className={classes.cell} align="right"><DeviceRoom deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
               <TableCell className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
               <TableCell className={classes.cell} align="right">
                 <button onClick={() => {

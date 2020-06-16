@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import SwitchComponent from '../../components/switchComponent';
-const val = 3545589
+const val = 5432
 const deviceid = parseInt(val)
 const type = 'switch'
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
 import SwitchComponent from '../../components/switchComponent'
-const val = 345452
+const val = 45554
 const deviceid = parseInt(val)
 const type = 'switch'
 

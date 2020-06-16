@@ -28,7 +28,7 @@ const createAdmin = async (UserModel) => {
   const hashedPassword = await bcrypt.hash('admin',12);
   UserModel.create({email:'admin@example.com',username:'admin',password: hashedPassword});
 }
-sequelize.sync(  );
+ sequelize.sync( ); //{force: true}
 sequelize.authenticate()
     .then(() => {{console.log('db connected'), createAdmin(UserModel)}})
     .catch(err => console.log(err)) 
@@ -280,13 +280,13 @@ io.on('connection', socket => {
     })
     socket.on('add-device', ({ deviceid,type }) => {
       console.log(`${deviceid}`);
-            const device = {name:'Nowe Urządzenie', status:true, room:'nie przypisano'}
+            const device = { status:true, room:'nie przypisano'}
             let{name,status,room}= device
               if(type == 'thermometer')
               {
                 DeviceModel.create({
                 
-                  name, 
+                  name: 'termometr', 
                   status,
                   room,
                   deviceid
@@ -299,7 +299,7 @@ io.on('connection', socket => {
               {
                 DeviceModel.create({
                 
-                  name, 
+                  name: 'włącznik/żarówka', 
                   status,
                   room,
                   deviceid
@@ -313,7 +313,7 @@ io.on('connection', socket => {
               {
                 DeviceModel.create({
                 
-                  name, 
+                  name: 'lodówka', 
                   status,
                   room,
                   deviceid
@@ -326,7 +326,7 @@ io.on('connection', socket => {
               {
                 DeviceModel.create({
                 
-                  name, 
+                  name: 'multidevice', 
                   status,
                   room,
                   deviceid

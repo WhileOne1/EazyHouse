@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import socketIOClient from "socket.io-client";
 import Thermometer from 'react-thermometer-component'
-const val = 234143234
+const val = 12763
 const deviceid = parseInt(val)
 const type = 'fridge'
 
