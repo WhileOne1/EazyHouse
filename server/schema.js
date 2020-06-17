@@ -62,7 +62,7 @@ const typeDefs = gql`
         fridgesbyroom(room: String! ): [fridge!]!,
         distinctRoom: [Device!]!,
         switchesWithValues: [switchwithvalue!]!
-        switchesWithValuesbyroom(room: String! ): [thermometer!]!,
+        switchesWithValuesbyroom(room: String! ): [switchwithvalue!]!,
 
         
      }
