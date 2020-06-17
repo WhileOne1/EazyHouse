@@ -50,7 +50,8 @@ class Header extends Component  {
               <NavLink style={navStyle} to="/register">Dodaj Użytkowników </NavLink>
             </li  >
             <li>
-            <button onClick={function(){localStorage.clear(); window.location.reload();}}>wyloguj</button>
+            <NavLink style={navStyle} onClick={function(){localStorage.clear(); window.location.reload();}} to="/login">Wyloguj </NavLink>
+            
             </li>
             </ul>
 
