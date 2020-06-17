@@ -1,12 +1,16 @@
 const Sequelize = require('sequelize');
 const sequelize = require('../config/database')
-const Fridge = sequelize.define('fridge', {
+const SwitchWitchValue = sequelize.define('switchwithvalue', {
      deviceid: {
         type: Sequelize.INTEGER,
         unique: true,
         model: 'devices', 
-        key: 'devicesid',
+          key: 'devicesid',
     }, 
+    isOn: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+    },
     value: {
         type: Sequelize.INTEGER,
         defaultValue: 0
@@ -16,4 +20,4 @@ const Fridge = sequelize.define('fridge', {
         defaultValue: ""
     },
 })
-module.exports = Fridge;
+module.exports = SwitchWitchValue;

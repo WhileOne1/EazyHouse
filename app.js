@@ -11,15 +11,18 @@ const _ = require('lodash');
  const sequelize = require('./server/config/database');
 const ThermometerModel = require('./server/newmodels/Thermometer');
 const SwitchModel = require('./server/newmodels/Switch');
+const SwitchWithValueModel = require('./server/newmodels/SwitchWithValue');
 const FridgeModel = require('./server/newmodels/Fridge');
 const UserModel = require('./server/newmodels/User');
 const DeviceModel = require('./server/newmodels/Device');
+//const { FORCE } = require('sequelize/types/lib/index-hints');
 
 SwitchModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 ThermometerModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 FridgeModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
+SwitchWithValueModel.belongsTo(DeviceModel, { foreignKey: 'deviceid' })
 UserModel.hasMany(DeviceModel); 
-DeviceModel.belongsTo(UserModel)
+//DeviceModel.belongsTo(UserModel)
 
 const SECRET = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1';
 const SECRET2 = 'dsjklgfdgsfdjklgnfdjgkdngjd1q234j234n34j1dsgdfgsdfds';
@@ -28,7 +31,7 @@ const createAdmin = async (UserModel) => {
   const hashedPassword = await bcrypt.hash('admin',12);
   UserModel.create({email:'admin@example.com',username:'admin',password: hashedPassword});
 }
- sequelize.sync( ); //{force: true}
+sequelize.sync( {force: true} );
 sequelize.authenticate()
     .then(() => {{console.log('db connected'), createAdmin(UserModel)}})
     .catch(err => console.log(err)) 
@@ -105,11 +108,13 @@ const resolvers = {
         switches: () => SwitchModel.findAll({include:[  DeviceModel ]}),
         fridges: () => FridgeModel.findAll({include:[  DeviceModel ]}),
         devices: () => DeviceModel.findAll({}),
+        switchesWithValues: () => SwitchWithValueModel.findAll({include:[  DeviceModel ]}),
         distinctRoom: () => DeviceModel.findAll({attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('room')) ,'room'], ]}),
         devicesbyroom: (parent, {room}) =>DeviceModel.findAll({ where: {room: room} }),
         thermometersbyroom: (parent, {room}) => ThermometerModel.findAll({include:[  {model:DeviceModel ,where: {room: room}} ]}),
         switchesbyroom: (parent, {room}) =>SwitchModel.findAll({include:[  {model:DeviceModel ,where: {room: room}} ]}),
         fridgesbyroom: (parent, {room}) => FridgeModel.findAll({include:[  {model:DeviceModel,where: {room: room}} ]}),
+        switchesWithValuesbyroom: (parent, {room}) => SwitchWithValueModel.findAll({include:[  {model:DeviceModel,where: {room: room}} ]}),
         
     },
     Mutation: {
@@ -135,7 +140,8 @@ const resolvers = {
         SwitchModel.destroy({where : {deviceid: deviceid}}) 
         FridgeModel.destroy({where : {deviceid: deviceid}}) 
         ThermometerModel.destroy({where : {deviceid: deviceid}}) 
-        DeviceModel.destroy({where : {deviceid: deviceid}}) 
+        DeviceModel.destroy({where : {deviceid: deviceid}})
+        SwitchWithValueModel.destroy({where : {deviceid: deviceid}}) 
 
   },
     editDevice: async (parent, {deviceid,name}) => {
@@ -279,14 +285,13 @@ io.on('connection', socket => {
 
     })
     socket.on('add-device', ({ deviceid,type }) => {
-      console.log(`${deviceid}`);
-            const device = { status:true, room:'nie przypisano'}
+            const device = {name:'Nowe Urządzenie', status:true, room:'nie przypisano'}
             let{name,status,room}= device
               if(type == 'thermometer')
               {
                 DeviceModel.create({
                 
-                  name: 'termometr', 
+                  name, 
                   status,
                   room,
                   deviceid
@@ -299,7 +304,7 @@ io.on('connection', socket => {
               {
                 DeviceModel.create({
                 
-                  name: 'włącznik/żarówka', 
+                  name, 
                   status,
                   room,
                   deviceid
@@ -313,7 +318,7 @@ io.on('connection', socket => {
               {
                 DeviceModel.create({
                 
-                  name: 'lodówka', 
+                  name, 
                   status,
                   room,
                   deviceid
@@ -322,19 +327,16 @@ io.on('connection', socket => {
                     {deviceid}
                   )})
               }
-              if(type == 'multidevice')
+              if(type == 'switchwithvalue')
               {
                 DeviceModel.create({
                 
-                  name: 'multidevice', 
+                  name, 
                   status,
                   room,
                   deviceid
                 }).then(() =>{
-                  SwitchModel.create(
-                    {deviceid}
-                  )
-                  ThermometerModel.create(
+                  SwitchWithValueModel.create(
                     {deviceid}
                   )
                 })
@@ -342,9 +344,10 @@ io.on('connection', socket => {
             
     })
     //thermometer
-    socket.on('send-thermometer-value', ({deviceid, value}) => {
+    socket.on('send-thermometer-value', ({deviceid, value,valueType}) => {
+      console.log(`${valueType}`);
         ThermometerModel.update(
-            { value: value },
+            { value: value ,valueType: valueType },
             { where: { deviceid: deviceid  } }
           )
     })
@@ -361,9 +364,10 @@ io.on('connection', socket => {
         })
 //*Switch
 //Fridge
-            socket.on('send-fridge-value', ({deviceid , value}) => {
+            socket.on('send-fridge-value', ({deviceid , value,valueType}) => {
+              console.log(`${valueType}`);
                 FridgeModel.update(
-                    { value: value },
+                    { value: value,valueType: valueType },
                     { where: { deviceid: deviceid  } }
                   )
             })
@@ -372,6 +376,19 @@ io.on('connection', socket => {
                 socket.broadcast.emit('fridge-value',{id1,value})
             })
 //*Fridge
+//SwitchwithValue
+socket.on('send-switchwithvalue-value', ({deviceid , value,value2,valueType}) => {
+  console.log(`${value2}`);
+    SwitchWithValueModel.update(
+        {isOn: value, value: value2,valueType: valueType,  },
+        { where: { deviceid: deviceid  } }
+      )
+})
+socket.on('change-switchwithvalue-value', ({id1, value2}) => {
+  console.log(`${id1}`);
+  socket.broadcast.emit('switchwithvalue-value',{id1,value2})
+})
+//*SwitchwithValue
 
     socket.on('disconnect', () => {
         DeviceModel.update(
@@ -387,4 +404,3 @@ server.listen().then(({ url }) => {
     
 })
 //})
-

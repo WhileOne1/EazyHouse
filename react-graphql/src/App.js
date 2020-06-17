@@ -19,6 +19,8 @@ import { useLocalStorage } from '@rehooks/local-storage';
 import Freezer from './views/devices/zamrazarka';
 import Thermo from './views/devices/termometrZewnetrzny';
 import NewSwitch from './views/devices/nowyswitch';
+import AirConditioning from './views/devices/switchwithvalue';
+import Pressure from './views/devices/cisnieniomierz';
 
 function App(props) {
        const [token] = useLocalStorage("token")
@@ -43,6 +45,8 @@ function App(props) {
                 <PrivateRoute path="/devices/freezer" component={Freezer} />
                 <PrivateRoute path="/devices/newthermometer" component={Thermo} />
                 <PrivateRoute path="/devices/nowyswitch" component={NewSwitch} />
+                <PrivateRoute path="/devices/pressure" component={Pressure} />
+                <PrivateRoute path="/devices/airconditioning" component={AirConditioning} />
                 <PrivateRoute path="/devices" component={device} />
                 <PrivateRoute path="/rooms" component={Rooms} />
                 <PrivateRoute path="/register" component={register} />

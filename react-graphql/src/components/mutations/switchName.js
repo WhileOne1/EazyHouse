@@ -26,7 +26,7 @@ const SwitchName = ({data,data2}) => {
   const classes = useStyles();
   let input;
   return(
-    <Popup trigger={<Button variant="contained" className={classes.button}> {data}</Button>} position="right center">
+    <Popup key={data2} trigger={<Button variant="contained" className={classes.button}> {data}</Button>} position="right center">
             <div> <Mutation mutation={POST_DEVICE} >
                                         {(editThermometer, {data3}) => (
                                           <div>

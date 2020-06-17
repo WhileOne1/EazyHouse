@@ -25,12 +25,22 @@ const typeDefs = gql`
          value: Int!
          deviceid: Int!
          device: Device
+         valueType: String!
       }
       type fridge  {
          id: ID!
          value: Int!
          deviceid: Int!
          device: Device
+         valueType: String!
+      }
+      type switchwithvalue  {
+         id: ID!
+         value: Int!
+         deviceid: Int!
+         device: Device
+         valueType: String!
+         isOn: Boolean!
       }
       type Error {
          path: String!
@@ -51,6 +61,8 @@ const typeDefs = gql`
         switchesbyroom(room: String! ): [switch!]!,
         fridgesbyroom(room: String! ): [fridge!]!,
         distinctRoom: [Device!]!,
+        switchesWithValues: [switchwithvalue!]!
+        switchesWithValuesbyroom(room: String! ): [thermometer!]!,
 
         
      }

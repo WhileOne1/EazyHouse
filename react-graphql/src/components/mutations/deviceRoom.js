@@ -27,7 +27,7 @@ const DeviceRoom = ({deviceName,deviceID}) => {
   let input;
   return(
     <Popup trigger={<Button variant="contained" className={classes.button}> {deviceName}</Button>} position="right center">
-            <div> <Mutation mutation={POST_DEVICE_ROOM} >
+            <div key={deviceID}> <Mutation mutation={POST_DEVICE_ROOM} >
                                         {(editThermometer, {data3}) => (
                                           <div>
                                             

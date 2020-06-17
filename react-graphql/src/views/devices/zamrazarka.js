@@ -4,7 +4,7 @@ import Thermometer from 'react-thermometer-component'
 const val = 12763
 const deviceid = parseInt(val)
 const type = 'fridge'
-
+const valueType = '°C'
 
 
 const MainFridge = () => {
@@ -26,7 +26,7 @@ const MainFridge = () => {
             socket.emit('old-device',  deviceid )
             appendMessage(`Urządzenie zostało podłączone`)
         })
-        setTimeout(()=> {socket.emit('send-fridge-value', {deviceid, value})},1000 );
+        setTimeout(()=> {socket.emit('send-fridge-value', {deviceid, value,valueType})},1000 );
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
@@ -45,7 +45,7 @@ const MainFridge = () => {
 
       }, []);
       useEffect(() => {
-        socket.emit('send-fridge-value', {deviceid, value})
+        socket.emit('send-fridge-value', {deviceid, value,valueType})
   
       },[value])
       
