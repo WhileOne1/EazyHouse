@@ -45,7 +45,7 @@ class Header extends Component  {
         <header className="Header">
         <nav className="Nav">
           <h1>EazyHouse</h1>
-          <ul className="Nav-Links">
+          <ul className="Nav-Links" >
             <li>
 				<HomeIcon/>
               <NavLink style={navStyle} to="/"> Strona Główna</NavLink>

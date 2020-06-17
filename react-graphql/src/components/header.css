@@ -10,6 +10,9 @@
     background: rgb(73,79,82);
     color: white;
 }
+.NavClass{
+	list-style-type: none;
+}
 .Nav-Links {
     width: 50%;
     display: flex;

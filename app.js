@@ -31,7 +31,7 @@ const createAdmin = async (UserModel) => {
   const hashedPassword = await bcrypt.hash('admin',12);
   UserModel.create({email:'admin@example.com',username:'admin',password: hashedPassword});
 }
-sequelize.sync( {force: true} );
+sequelize.sync(  );//{force: true}
 sequelize.authenticate()
     .then(() => {{console.log('db connected'), createAdmin(UserModel)}})
     .catch(err => console.log(err)) 
