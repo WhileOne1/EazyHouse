@@ -90,7 +90,7 @@ class Register extends React.Component {
           placeholder="Username"
           fluid
         />
-        <Input label="Filled" error={!!emailError} name="email" onChange={onChange} value={email} placeholder="Email" fluid />
+        <Input label="Filled" error={!!emailError}  name="email" onChange={onChange} value={email} placeholder="Email" fluid />
         <Input label="Filled"
           error={!!passwordError}
           name="password"

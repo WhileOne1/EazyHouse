@@ -2,6 +2,12 @@ import React, {Component} from "react";
 import { NavLink } from "react-router-dom";
 import socketIOClient from "socket.io-client";
 import "./header.css"
+import DeviceHubIcon from '@material-ui/icons/DeviceHub';
+import HomeIcon from '@material-ui/icons/Home';
+import DevicesIcon from '@material-ui/icons/Devices';
+import PeopleIcon from '@material-ui/icons/People';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+
 const socket = socketIOClient('http://localhost:2000')
 const navStyle = {
   color: 'white' ,
@@ -18,13 +24,16 @@ class Header extends Component  {
         <h1>EazyHouse</h1>
         <ul className="Nav-Links">
           <li>
-            <NavLink style={navStyle} to="/">Strona Główna</NavLink>
+			<HomeIcon/>
+            <NavLink style={navStyle} to="/"> Strona Główna</NavLink>
           </li>
           <li>
-            <NavLink style={navStyle} to="/rooms">Pokoje</NavLink>
+			<DeviceHubIcon/>
+            <NavLink style={navStyle} to="/rooms"> Pokoje</NavLink>
           </li>
           <li>
-            <NavLink style={navStyle} to="/devices">Urządzenia</NavLink>
+			<DevicesIcon/>
+            <NavLink style={navStyle} to="/devices"> Symulator Urządzeń</NavLink>
           </li>
           </ul>
 
@@ -38,19 +47,24 @@ class Header extends Component  {
           <h1>EazyHouse</h1>
           <ul className="Nav-Links">
             <li>
-              <NavLink style={navStyle} to="/">Strona Główna</NavLink>
+				<HomeIcon/>
+              <NavLink style={navStyle} to="/"> Strona Główna</NavLink>
             </li>
             <li>
-              <NavLink style={navStyle} to="/rooms">Pokoje</NavLink>
+				<DeviceHubIcon/>
+				<NavLink style={navStyle} to="/rooms"> Pokoje</NavLink>
             </li>
             <li>
-              <NavLink style={navStyle} to="/devices">Symulator Urządzeń</NavLink>
+				<DevicesIcon/>
+				<NavLink style={navStyle} to="/devices"> Symulator Urządzeń</NavLink>
             </li>
             <li>
-              <NavLink style={navStyle} to="/register">Dodaj Użytkowników</NavLink>
+				<PeopleIcon/>
+				<NavLink style={navStyle} to="/register"> Dodaj Użytkowników</NavLink>
             </li>
             <li>
-            <button onClick={function(){localStorage.clear(); window.location.reload();}}>Wyloguj</button>
+				<PowerSettingsNewIcon/>
+				<NavLink style={navStyle} onClick={function(){localStorage.clear(); window.location.reload();}} to="/login"> Wyloguj </NavLink>
             </li>
             </ul>
 

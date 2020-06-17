@@ -44,7 +44,7 @@ function App(props) {
                 <PrivateRoute path="/devices/door" component={Door} />
                 <PrivateRoute path="/devices/freezer" component={Freezer} />
                 <PrivateRoute path="/devices/newthermometer" component={Thermo} />
-                <PrivateRoute path="/devices/nowyswitch" component={NewSwitch} />
+                <PrivateRoute path="/devices/newswitch" component={NewSwitch} />
                 <PrivateRoute path="/devices/pressure" component={Pressure} />
                 <PrivateRoute path="/devices/airconditioning" component={AirConditioning} />
                 <PrivateRoute path="/devices" component={device} />
