@@ -106,6 +106,18 @@ const GET_SWITCHES_ROOM = gql`
       deviceid
       }
     }
+    switchesWithValuesbyroom(room: $room) {
+      valueType
+      value
+      deviceid
+      isOn
+      device{
+      name
+      room
+      status
+      deviceid
+      }
+    }
     distinctRoom{
       room
     }
@@ -205,6 +217,35 @@ return (
                   -
             </button> 
             </TableCell>
+            </TableRow>
+
+
+            ))}
+            {data.switchesWithValuesbyroom.sort((a, b) => (a.device.deviceid > b.device.deviceid) ? 1 : -1).map(data => (
+              <TableRow className={classes.row} key={data.device.deviceid}>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceName key={data.device.deviceid} data={data.device.name}  data2={data.device.deviceid} /></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"><DeviceRoom key={data.device.deviceid} deviceName={data.device.room} deviceID={data.device.deviceid} /></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right"> <Indicator istrue={data.device.status}/></TableCell>
+              <TableCell key={data.device.deviceid} className={classes.cell} align="right">
+              <div className={classes.div}><SwitchComponent  isItOn={data.isOn} switchid={data.device.deviceid}
+                            handleToggle={(e) => {e.preventDefault(); 
+                            socket.emit('change-switch-value',{id1: data.device.deviceid,isOn: !data.isOn})
+                            }}/></div>
+                <button onClick={() => {
+                socket.emit('change-switchwithvalue-value',{id1: data.device.deviceid,value2: data.value + 1})
+               }}>
+                +
+                  </button>
+
+                     <h2 key={data.device.deviceid}>{data.value} {data.valueType}</h2> 
+
+                <button onClick={() =>{
+                     socket.emit('change-switchwithvalue-value',{id1: data.device.deviceid,value2: data.value -1})
+                    }}>
+                  -
+            </button> 
+            </TableCell>
+
             </TableRow>
 
 

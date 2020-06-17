@@ -46,7 +46,7 @@ const MainSwitch = () => {
             }
 
         })
-        socket.emit('send-switchwithvalue-value', {deviceid, value,value2,valueType})
+        setTimeout(() => {socket.emit('send-switchwithvalue-value', {deviceid, value,value2,valueType})},1000);
 
         function appendMessage(message) {
             const messageElement = document.createElement('div')
